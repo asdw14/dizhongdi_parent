@@ -2,6 +2,7 @@ package com.dizhongdi.servicedzd.controller;
 
 import com.dizhongdi.result.R;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -13,8 +14,9 @@ import org.springframework.web.bind.annotation.RestController;
  * @Author:dizhongdi
  */
 @RestController
+@RequestMapping("/admin")
 public class DzdController {
-    @GetMapping
+    @GetMapping("hello")
     public R hello(){
         return R.ok().data("messge","test");
     }

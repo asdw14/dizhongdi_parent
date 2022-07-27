@@ -1,4 +1,4 @@
-package servicebase.config;
+package com.dizhongdi.servicebase.config;
 
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
 import com.baomidou.mybatisplus.core.injector.ISqlInjector;

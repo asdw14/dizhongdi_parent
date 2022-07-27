@@ -1,4 +1,4 @@
-package servicebase.config;
+package com.dizhongdi.servicebase.config;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
@@ -20,7 +20,7 @@ import java.time.Duration;
 
 /**
  * ClassName:RedisConfig
- * Package:com.dizhongdi.servicebase.config
+ * Package:com.dizhongdi.com.dizhongdi.servicebase.config
  * Description:
  *
  * @Date: 2022/7/6 23:47

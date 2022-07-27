@@ -1,4 +1,4 @@
-package servicebase.exceptionhandler;
+package com.dizhongdi.servicebase.exceptionhandler;
 
 import com.dizhongdi.result.R;
 import lombok.extern.slf4j.Slf4j;
@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
  * ClassName:GlobalExceptionHandler
- * Package:com.dizhongdi.servicebase.handler
+ * Package:com.dizhongdi.com.dizhongdi.servicebase.handler
  * Description:
  *
  * @Date: 2022/5/9 21:52

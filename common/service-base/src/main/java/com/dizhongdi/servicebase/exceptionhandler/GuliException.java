@@ -1,4 +1,4 @@
-package servicebase.exceptionhandler;
+package com.dizhongdi.servicebase.exceptionhandler;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 
 /**
  * ClassName:GuliException
- * Package:com.dizhongdi.servicebase.exceptionhandler
+ * Package:com.dizhongdi.com.dizhongdi.servicebase.exceptionhandler
  * Description:
  *
  * @Date: 2022/5/9 22:10

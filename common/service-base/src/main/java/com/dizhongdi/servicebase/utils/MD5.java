@@ -1,4 +1,4 @@
-package servicebase.utils;
+package com.dizhongdi.servicebase.utils;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
