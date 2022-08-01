@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @Author:dizhongdi
  */
 @RestController
-@RequestMapping("/admin")
+@RequestMapping("/admin/dzd")
 public class DzdController {
     @GetMapping("hello")
     public R hello(){
