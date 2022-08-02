@@ -8,7 +8,7 @@ import java.util.Map;
 
 /**
  * ClassName:R
- * Package:com.dizhongdi.commonutils
+ * Package:com.dizhongdi.result
  * Description:
  *
  * @Date: 2022/5/8 21:52

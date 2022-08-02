@@ -1,7 +1,7 @@
 package com.dizhongdi.serurity.security;
 
-import com.atguigu.commonutils.R;
-import com.atguigu.commonutils.ResponseUtil;
+import com.dizhongdi.result.R;
+import com.dizhongdi.result.ResponseUtil;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 

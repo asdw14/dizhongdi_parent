@@ -1,7 +1,7 @@
 package com.dizhongdi.serurity.filter;
 
-import com.atguigu.commonutils.R;
-import com.atguigu.commonutils.ResponseUtil;
+import com.dizhongdi.result.R;
+import com.dizhongdi.result.ResponseUtil;
 import com.dizhongdi.serurity.security.TokenManager;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
