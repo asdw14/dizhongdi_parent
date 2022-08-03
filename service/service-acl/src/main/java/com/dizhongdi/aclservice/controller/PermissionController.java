@@ -34,6 +34,14 @@ public class PermissionController {
         return R.ok().data("children",list);
     }
 
+    //获取全部菜单
+//    @ApiOperation(value = "查询所有菜单")
+//    @GetMapping
+//    public R indexAllPermission2() {
+//        Permission list =  permissionService.queryAllMenu2();
+//        return R.ok().data("items",list);
+//    }
+
     @ApiOperation(value = "递归删除菜单")
     @DeleteMapping("remove/{id}")
     public R remove(@PathVariable String id) {

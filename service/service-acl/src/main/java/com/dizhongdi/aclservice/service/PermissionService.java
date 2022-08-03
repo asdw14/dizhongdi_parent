@@ -18,6 +18,8 @@ public interface PermissionService extends IService<Permission> {
 
     //获取全部菜单
     List<Permission> queryAllMenu();
+    Permission queryAllMenu2();
+
 
     //根据角色获取菜单
     List<Permission> selectAllMenu(String roleId);

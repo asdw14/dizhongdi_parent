@@ -50,6 +50,17 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
         return result;
     }
 
+    public Permission queryAllMenu2() {
+
+        QueryWrapper<Permission> wrapper = new QueryWrapper<>();
+        wrapper.orderByAsc("id");
+        List<Permission> permissionList = baseMapper.selectList(wrapper);
+
+        Permission result = bulid2(permissionList);
+
+        return result;
+    }
+
     //根据角色获取菜单
     @Override
     public List<Permission> selectAllMenu(String roleId) {
@@ -183,12 +194,42 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
         return trees;
     }
 
+    private static Permission bulid2(List<Permission> treeNodes) {
+        Permission trees = null;
+        for (Permission treeNode : treeNodes) {
+            if ("0".equals(treeNode.getPid())) {
+                treeNode.setLevel(1);
+                findChildren(treeNode,treeNodes);
+                trees = treeNode;
+                return treeNode;
+            }
+        }
+        return trees;
+    }
+
+
     /**
      * 递归查找子节点
      * @param treeNodes
      * @return
      */
     private static Permission findChildren(Permission treeNode,List<Permission> treeNodes) {
+        treeNode.setChildren(new ArrayList<Permission>());
+
+        for (Permission it : treeNodes) {
+            if(treeNode.getId().equals(it.getPid())) {
+                int level = treeNode.getLevel() + 1;
+                it.setLevel(level);
+                if (treeNode.getChildren() == null) {
+                    treeNode.setChildren(new ArrayList<>());
+                }
+                treeNode.getChildren().add(findChildren(it,treeNodes));
+            }
+        }
+        return treeNode;
+    }
+
+    private static Permission findChildren2(Permission treeNode,List<Permission> treeNodes) {
         treeNode.setChildren(new ArrayList<Permission>());
 
         for (Permission it : treeNodes) {
