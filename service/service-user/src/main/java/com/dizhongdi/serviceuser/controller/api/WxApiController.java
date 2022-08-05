@@ -7,6 +7,7 @@ import com.dizhongdi.serviceuser.util.ConstantPropertiesUtil;
 import com.dizhongdi.serviceuser.util.HttpClientUtils;
 import com.dizhongdi.utils.JwtUtils;
 import com.google.gson.Gson;
+import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -28,6 +29,7 @@ import java.util.HashMap;
  */
 @Controller
 @RequestMapping("/api/ucenter/wx")
+@Api(description="前台用户微信号")
 public class WxApiController {
 
     @Autowired

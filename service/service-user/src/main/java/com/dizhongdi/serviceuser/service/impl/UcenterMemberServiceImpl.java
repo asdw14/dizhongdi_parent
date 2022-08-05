@@ -85,6 +85,8 @@ public class UcenterMemberServiceImpl extends ServiceImpl<UcenterMemberMapper, U
         //从redis获取发送的验证码
         String mobleCode = (String) redisTemplate.opsForValue().get(mobile);
         if(!code.equals(mobleCode)) {
+            System.out.println(mobile);
+            System.out.println(mobleCode + ".." + code);
             throw new GuliException(20001,"error");
         }
 
