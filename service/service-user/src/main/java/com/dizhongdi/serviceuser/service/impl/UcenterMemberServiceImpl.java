@@ -10,7 +10,7 @@ import com.dizhongdi.serviceuser.entity.UcenterMember;
 import com.dizhongdi.serviceuser.mapper.UcenterMemberMapper;
 import com.dizhongdi.serviceuser.service.UcenterMemberService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.dizhongdi.utils.JwtUtils;
+import com.dizhongdi.serviceuser.utils.JwtUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;

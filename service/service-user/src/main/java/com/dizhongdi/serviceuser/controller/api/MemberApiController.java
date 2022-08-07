@@ -1,7 +1,5 @@
 package com.dizhongdi.serviceuser.controller.api;
 
-import com.dizhongdi.rabbit.config.MyRabbitConfig;
-import com.dizhongdi.rabbit.service.RabbitService;
 import com.dizhongdi.result.R;
 import com.dizhongdi.serviceuser.entity.LoginInfo;
 import com.dizhongdi.serviceuser.entity.LoginVo;
@@ -12,7 +10,6 @@ import com.dizhongdi.utils.JwtUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
