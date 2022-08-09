@@ -30,9 +30,9 @@ public class GlobalExceptionHandler {
         return R.error().message("特定异常处理");
     }
 
-    @ExceptionHandler(GuliException.class)
+    @ExceptionHandler(DzdException.class)
     @ResponseBody
-    public R error(GuliException e){
+    public R error(DzdException e){
         log.error(e.getMsg());
         e.printStackTrace();
         return R.error().message(e.getMsg()).code(e.getCode());

@@ -1,6 +1,6 @@
 package com.dizhongdi.serviceuser.controller.api;
 
-import com.dizhongdi.servicebase.exceptionhandler.GuliException;
+import com.dizhongdi.servicebase.exceptionhandler.DzdException;
 import com.dizhongdi.serviceuser.entity.UcenterMember;
 import com.dizhongdi.serviceuser.service.UcenterMemberService;
 import com.dizhongdi.serviceuser.util.ConstantPropertiesUtil;
@@ -65,7 +65,7 @@ public class WxApiController {
             result = HttpClientUtils.get(accessTokenUrl);
             System.out.println("accessToken=============" + result);
         } catch (Exception e) {
-            throw new GuliException(20001, "获取access_token失败");
+            throw new DzdException(20001, "获取access_token失败");
         }
 
         //解析json字符串
@@ -93,7 +93,7 @@ public class WxApiController {
                 resultUserInfo = HttpClientUtils.get(userInfoUrl);
                 System.out.println("resultUserInfo==========" + resultUserInfo);
             } catch (Exception e) {
-                throw new GuliException(20001, "获取用户信息失败");
+                throw new DzdException(20001, "获取用户信息失败");
             }
 
             //解析json
@@ -140,7 +140,7 @@ public class WxApiController {
         try {
             redirectUrl = URLEncoder.encode(redirectUrl, "UTF-8"); //url编码
         } catch (UnsupportedEncodingException e) {
-            throw new GuliException(20001, e.getMessage());
+            throw new DzdException(20001, e.getMessage());
         }
 
         // 防止csrf攻击（跨站请求伪造攻击）

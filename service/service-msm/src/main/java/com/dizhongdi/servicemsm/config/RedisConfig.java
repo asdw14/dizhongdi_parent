@@ -1,4 +1,4 @@
-package com.dizhongdi.servicebase.config;
+package com.dizhongdi.servicemsm.config;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;

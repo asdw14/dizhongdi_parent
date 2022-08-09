@@ -6,7 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * ClassName:GuliException
+ * ClassName:DzdException
  * Package:com.dizhongdi.com.dizhongdi.servicebase.exceptionhandler
  * Description:
  *
@@ -16,14 +16,14 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class GuliException extends RuntimeException {
+public class DzdException extends RuntimeException {
 
     @ApiModelProperty(value = "状态码")
     private Integer code;
 
     @Override
     public String toString() {
-        return "GuliException{" +
+        return "DzdException{" +
                 "code=" + code +
                 ", msg='" + msg + '\'' +
                 '}';

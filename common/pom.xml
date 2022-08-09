@@ -16,6 +16,7 @@
         <module>common-utils</module>
         <module>service-base</module>
         <module>spring-security</module>
+        <module>rabbit-util</module>
     </modules>
 
     <properties>
@@ -68,33 +69,7 @@
             <artifactId>commons-pool2</artifactId>
             <version>2.6.0</version>
         </dependency>
-
-        <!--    java版本过高 登录报错：java.lang.NoClassDefFoundError: javax/xml/bind/DatatypeConverter解决
-    这是由于java版本过高，之前java 8及以前的版本是默认包含jaxb-api包的，但是升级后的版本就需要手动来导入这个包了。
-    所以找到pom.xml文件，然后在里边添加如下代码
--->
-        <dependency>
-            <groupId>javax.xml.bind</groupId>
-            <artifactId>jaxb-api</artifactId>
-            <version>2.3.0</version>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.xml.bind</groupId>
-            <artifactId>jaxb-impl</artifactId>
-            <version>2.3.0</version>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.xml.bind</groupId>
-            <artifactId>jaxb-core</artifactId>
-            <version>2.3.0</version>
-        </dependency>
-        <dependency>
-            <groupId>javax.activation</groupId>
-            <artifactId>activation</artifactId>
-            <version>1.1.1</version>
-        </dependency>
     </dependencies>
-
 
 
 </project>

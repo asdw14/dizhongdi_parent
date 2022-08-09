@@ -12,7 +12,7 @@ import java.util.Date;
 
 /**
  * ClassName:MyMetaObjectHandler
- * Package:com.dizhongdi.serviceucenter.handler
+ * Package:com.dizhongdi.serviceuser.handler
  * Description:
  *
  * @Date: 2022/7/8 0:53

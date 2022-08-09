@@ -17,6 +17,10 @@
     </properties>
     <dependencies>
         <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.dizhongdi</groupId>
             <artifactId>common-utils</artifactId>
             <version>1.0-SNAPSHOT</version>

@@ -1,7 +1,7 @@
 package com.dizhongdi.serviceuser.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.dizhongdi.servicebase.exceptionhandler.GuliException;
+import com.dizhongdi.servicebase.exceptionhandler.DzdException;
 import com.dizhongdi.servicebase.utils.MD5;
 import com.dizhongdi.serviceuser.entity.LoginInfo;
 import com.dizhongdi.serviceuser.entity.LoginVo;
@@ -37,23 +37,23 @@ public class UcenterMemberServiceImpl extends ServiceImpl<UcenterMemberMapper, U
         String password = loginVo.getPassword();
         //校验参数
         if(StringUtils.isEmpty(mobile) || StringUtils.isEmpty(password) ) {
-            throw new GuliException(20001,"error");
+            throw new DzdException(20001,"error");
         }
 
         //获取会员
         UcenterMember member = this.getOne(new QueryWrapper<UcenterMember>().eq("mobile", mobile));
         if (null == member){
-            throw new GuliException(20001,"error");
+            throw new DzdException(20001,"error");
 
         }
         //校验密码
         if(!MD5.encrypt(password).equals(member.getPassword())) {
-            throw new GuliException(20001,"error");
+            throw new DzdException(20001,"error");
         }
 
         //校验是否被禁用
         if(member.getIsDisabled()) {
-            throw new GuliException(20001,"error");
+            throw new DzdException(20001,"error");
         }
 
         //使用JWT生成token字符串
@@ -73,12 +73,12 @@ public class UcenterMemberServiceImpl extends ServiceImpl<UcenterMemberMapper, U
                 StringUtils.isEmpty(nickname) ||
                 StringUtils.isEmpty(password) ||
                 StringUtils.isEmpty(code)) {
-            throw new GuliException(20001,"error");
+            throw new DzdException(20001,"error");
         }
 
         //如果手机号已经注册过
         if (baseMapper.selectCount(new QueryWrapper<UcenterMember>().eq("mobile",mobile))>0){
-            throw new GuliException(20001,"error");
+            throw new DzdException(20001,"error");
         }
 
         //校验校验验证码
@@ -87,7 +87,7 @@ public class UcenterMemberServiceImpl extends ServiceImpl<UcenterMemberMapper, U
         if(!code.equals(mobleCode)) {
             System.out.println(mobile);
             System.out.println(mobleCode + ".." + code);
-            throw new GuliException(20001,"error");
+            throw new DzdException(20001,"error");
         }
 
         //添加注册信息到数据库
