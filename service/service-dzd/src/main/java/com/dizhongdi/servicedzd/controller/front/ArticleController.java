@@ -2,6 +2,7 @@ package com.dizhongdi.servicedzd.controller.front;
 
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.dizhongdi.rabbit.service.RabbitService;
 import com.dizhongdi.result.R;
 import com.dizhongdi.servicedzd.entity.DzdArticle;
 import com.dizhongdi.servicedzd.entity.vo.article.AticleQuery;

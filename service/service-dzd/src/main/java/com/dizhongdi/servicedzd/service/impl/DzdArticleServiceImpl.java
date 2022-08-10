@@ -1,10 +1,14 @@
 package com.dizhongdi.servicedzd.service.impl;
 
 
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.dizhongdi.model.EsArticleVo;
+import com.dizhongdi.rabbit.config.MqConst;
+import com.dizhongdi.rabbit.service.RabbitService;
 import com.dizhongdi.servicedzd.entity.DzdArticle;
 import com.dizhongdi.servicedzd.entity.DzdArticleDescription;
 import com.dizhongdi.servicedzd.entity.vo.article.AticleQuery;
@@ -36,14 +40,29 @@ public class DzdArticleServiceImpl extends ServiceImpl<DzdArticleMapper, DzdArti
     @Autowired
     DzdArticleDescriptionService descriptionService;
 
+    @Autowired
+    RabbitService rabbitService;
+
     //发布文章
     @Override
     public boolean posting(CreateArticleVo articleVo) {
         DzdArticle article = new DzdArticle();
         BeanUtils.copyProperties(articleVo,article);
-        return baseMapper.insert(article) <= 0 ?  false :
-                descriptionService.save(new DzdArticleDescription().
-                        setDescription(articleVo.getDescription()).setId(article.getId()));
+
+        if (baseMapper.insert(article) > 0) {
+            //将正文添加到正文表
+            descriptionService.save(new DzdArticleDescription().
+                    setDescription(articleVo.getDescription()).setId(article.getId()));
+
+            //创建给ES发送的vo
+            EsArticleVo esArticleVo = new EsArticleVo().setId(article.getId());
+            BeanUtils.copyProperties(articleVo,esArticleVo);
+            String jsonArticle = JSONObject.toJSONString(esArticleVo);
+            rabbitService.sendMessage(MqConst.EXCHANGE_DIRECT_ARTICLE, MqConst.ROUTING_ARTICLE_SORU, jsonArticle);
+            return true;
+        }
+        return false;
+
     }
 
     //根据id获得帖子
@@ -62,6 +81,7 @@ public class DzdArticleServiceImpl extends ServiceImpl<DzdArticleMapper, DzdArti
     public boolean deleteByid(String id) {
         boolean falg1 = this.removeById(id);
         boolean falg2 = descriptionService.removeById(id);
+        rabbitService.sendMessage(MqConst.EXCHANGE_DIRECT_ARTICLE, MqConst.ROUTING_ARTICLE_SORU, id);
         return falg1 && falg2;
     }
 
@@ -103,6 +123,12 @@ public class DzdArticleServiceImpl extends ServiceImpl<DzdArticleMapper, DzdArti
         boolean flag2 = descriptionService.updateById(
                 new DzdArticleDescription().setId(article.getId()).
                         setDescription(articleVo.getDescription()));
+        //创建给ES发送的vo
+        EsArticleVo esArticleVo = new EsArticleVo().setId(article.getId());
+        BeanUtils.copyProperties(articleVo,esArticleVo);
+        String jsonArticle = JSONObject.toJSONString(esArticleVo);
+        rabbitService.sendMessage(MqConst.EXCHANGE_DIRECT_ARTICLE, MqConst.ROUTING_ARTICLE_SORU, jsonArticle);
+
         return flag1 && flag2;
     }
 }

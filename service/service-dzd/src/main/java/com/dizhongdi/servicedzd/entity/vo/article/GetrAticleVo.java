@@ -28,7 +28,6 @@ import java.util.Date;
 public class GetrAticleVo {
 
     @ApiModelProperty(value = "帖子ID")
-    @TableId(value = "id", type = IdType.ID_WORKER_STR)
     private String id;
 
     @ApiModelProperty(value = "用户ID")
@@ -55,7 +54,6 @@ public class GetrAticleVo {
     @ApiModelProperty(value = "浏览数量")
     private Long viewCount;
 
-
     @ApiModelProperty(value = "帖子状态 Draft未发布  Normal已发布")
     private String status;
 
@@ -63,11 +61,9 @@ public class GetrAticleVo {
     private Integer isDeleted;
 
     @ApiModelProperty(value = "创建时间")
-    @TableField(fill = FieldFill.INSERT)
     private Date gmtCreate;
 
     @ApiModelProperty(value = "更新时间")
-    @TableField(fill = FieldFill.INSERT_UPDATE)
     private Date gmtModified;
 
 }
