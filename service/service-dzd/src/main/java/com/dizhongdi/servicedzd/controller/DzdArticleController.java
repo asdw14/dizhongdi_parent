@@ -50,7 +50,7 @@ public class DzdArticleController {
     }
 
     @ApiOperation(value = "根据id删除帖子")
-    @DeleteMapping("/{id}")
+    @DeleteMapping("removeById/{id}")
     public R deleteById(@PathVariable String id){
         if (dzdArticleService.deleteByid(id)){
             return R.ok().message("删除成功");
@@ -59,7 +59,7 @@ public class DzdArticleController {
     }
 
     @ApiOperation(value = "分页获取帖子")
-    @GetMapping("{page}/{limit}")
+    @GetMapping("getPageList/{page}/{limit}")
     public R getList(
             @ApiParam(name = "page", value = "当前页码", required = true)
             @PathVariable Long page,

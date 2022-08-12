@@ -53,4 +53,50 @@ public class MyRabbitConfig {
         return BindingBuilder.bind(queueB).to(MsmExchange).with("MSMB");
     }
 
+    // 声明 articleExchange
+    @Bean("articleExchange")
+    public DirectExchange articleExchange(){
+        return new DirectExchange(MqConst.EXCHANGE_DIRECT_ARTICLE);
+    }
+
+    //ES帖子增改队列
+    @Bean("queueArticleSORU")
+    public Queue queueArticleSORU(){
+        return QueueBuilder.durable(MqConst.QUEUE_ARTICLE_SORU).build();
+    }
+
+    //ES帖子查询队列
+    @Bean("queueArticleQuery")
+    public Queue queueArticleQuery(){
+        return QueueBuilder.durable(MqConst.QUEUE_ARTICLE_QUERY).build();
+    }
+
+    //ES帖子删除队列
+    @Bean("queueArticleDelete")
+    public Queue queueArticleDelete(){
+        return QueueBuilder.durable(MqConst.QUEUE_ARTICLE_DELETE).build();
+    }
+
+    // 声明增改队列 queueArticleSORU 绑定 articleExchange 交换机
+    @Bean
+    public Binding queueSoruBindingArticle(@Qualifier("queueArticleSORU") Queue queueArticleSORU,
+                                             @Qualifier("articleExchange") DirectExchange articleExchange){
+        return BindingBuilder.bind(queueArticleSORU).to(articleExchange).with(MqConst.ROUTING_ARTICLE_SORU);
+    }
+
+    // 声明增改队列 queueArticleQuery 绑定 articleExchange 交换机
+    @Bean
+    public Binding queueQueryBindingArticle(@Qualifier("queueArticleQuery") Queue queueArticleQuery,
+                                    @Qualifier("articleExchange") DirectExchange articleExchange){
+        return BindingBuilder.bind(queueArticleQuery).to(articleExchange).with(MqConst.ROUTING_ARTICLE_QUERY);
+    }
+
+    // 声明增改队列 queueArticleDelete 绑定 articleExchange 交换机
+    @Bean
+    public Binding queueDeleteBindingArticle(@Qualifier("queueArticleDelete") Queue queueArticleDelete,
+                                           @Qualifier("articleExchange") DirectExchange articleExchange){
+        return BindingBuilder.bind(queueArticleDelete).to(articleExchange).with(MqConst.ROUTING_ARTICLE_DELETE);
+    }
+
+
 }
