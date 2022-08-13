@@ -25,7 +25,7 @@ import java.util.Map;
  * @since 2022-08-09
  */
 @RestController
-@RequestMapping("/admin/article/")
+@RequestMapping("/admin/dzd/article/")
 @Api(description="帖子后台管理")
 public class DzdArticleController {
 
@@ -59,7 +59,7 @@ public class DzdArticleController {
     }
 
     @ApiOperation(value = "分页获取帖子")
-    @GetMapping("getPageList/{page}/{limit}")
+    @PostMapping("getPageList/{page}/{limit}")
     public R getList(
             @ApiParam(name = "page", value = "当前页码", required = true)
             @PathVariable Long page,

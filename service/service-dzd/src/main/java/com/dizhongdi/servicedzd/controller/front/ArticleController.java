@@ -27,7 +27,7 @@ import java.util.Map;
  * @since 2022-08-09
  */
 @RestController
-@RequestMapping("/api/article/")
+@RequestMapping("/api/dzd/article/")
 @Api(description="帖子前台")
 public class ArticleController {
 
