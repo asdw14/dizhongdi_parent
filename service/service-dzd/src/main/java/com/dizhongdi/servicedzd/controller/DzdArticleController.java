@@ -1,6 +1,7 @@
 package com.dizhongdi.servicedzd.controller;
 
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.dizhongdi.result.R;
 import com.dizhongdi.servicedzd.entity.DzdArticle;
@@ -32,7 +33,7 @@ public class DzdArticleController {
     @Autowired
     DzdArticleService dzdArticleService;
     @ApiOperation(value = "发布帖子")
-    @PostMapping("/posting")
+    @PostMapping("/saveOrPush")
     public R posting(@RequestBody CreateArticleVo articleVo){
 
         //发布未成功报错
@@ -42,13 +43,29 @@ public class DzdArticleController {
         return R.ok().message("文章发布成功");
     }
 
+    @ApiOperation(value = "更新帖子")
+    @GetMapping("update/{id}")
+    public R getById(@PathVariable String id,@RequestBody CreateArticleVo articleVo){
+        GetrAticleVo getrAticleVo = dzdArticleService.queryById(id);
+        return R.ok().data("item",getrAticleVo);
+    }
+
     @ApiOperation(value = "根据id获取帖子")
-    @GetMapping("/{id}")
+    @PutMapping("articleInfo/{id}")
     public R getById(@PathVariable String id){
         GetrAticleVo getrAticleVo = dzdArticleService.queryById(id);
         return R.ok().data("item",getrAticleVo);
     }
 
+
+    @ApiOperation(value = "修改发布状态")
+    @DeleteMapping("statusById/{id}")
+    public R statusById(@PathVariable String id){
+        if (dzdArticleService.updateStatus(id)){
+            return R.ok();
+        }
+        return R.error();
+    }
     @ApiOperation(value = "根据id删除帖子")
     @DeleteMapping("removeById/{id}")
     public R deleteById(@PathVariable String id){
@@ -67,11 +84,10 @@ public class DzdArticleController {
             @ApiParam(name = "limit", value = "每页记录数", required = true)
             @PathVariable Long limit,
 
-            @ApiParam(name = "AticleQuery", value = "查询对象", required = false) AticleQuery query){
-        Page<DzdArticle> pageParam = new Page<>();
-
-        Map<String,Object> pageList =  dzdArticleService.pageList(pageParam,query);
-        return R.ok().data("items",pageList);
+            @ApiParam(name = "AticleQuery", value = "查询对象", required = false) AticleQuery articleQuery){
+        Page<DzdArticle> articlePage = new Page<>(page,limit);
+        IPage<DzdArticle> articleIPage = dzdArticleService.pageQuery(articlePage,articleQuery);
+        return R.ok().data("items" , articleIPage.getRecords()).data("total",articleIPage.getTotal());
     }
 }
 

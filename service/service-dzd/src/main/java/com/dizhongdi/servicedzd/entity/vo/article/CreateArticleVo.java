@@ -33,6 +33,12 @@ public class CreateArticleVo {
     @ApiModelProperty(value = "文章内容")
     private String description;
 
+    @ApiModelProperty(value = "封禁状态 0未封  1已封")
+    private Integer isLock;
+
+    @ApiModelProperty(value = "帖子状态 Draft未发布  Normal已发布")
+    private String status;
+
     @ApiModelProperty(value = "资源价格，设置为0则可免费观看")
     private BigDecimal price;
 

@@ -131,4 +131,25 @@ public class DzdArticleServiceImpl extends ServiceImpl<DzdArticleMapper, DzdArti
 
         return flag1 && flag2;
     }
+
+    @Override
+    public IPage<DzdArticle> pageQuery(Page<DzdArticle> articlePage, AticleQuery articleQuery) {
+        QueryWrapper<DzdArticle> wrapper = new QueryWrapper<>();
+        wrapper.orderByAsc("gmt_modified");
+        if (wrapper!=null){
+
+        }
+        return baseMapper.selectPage(articlePage,wrapper);
+
+    }
+
+    //修改发布状态
+    @Override
+    public boolean updateStatus(String id) {
+        DzdArticle article = baseMapper.selectById(id);
+        return this.updateById(
+                "Normal". equals(article.getStatus()) ?
+                        article.setStatus("Draft") :
+                        article.setStatus("Normal"));
+    }
 }

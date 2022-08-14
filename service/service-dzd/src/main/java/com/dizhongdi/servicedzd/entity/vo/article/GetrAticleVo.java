@@ -57,6 +57,9 @@ public class GetrAticleVo {
     @ApiModelProperty(value = "帖子状态 Draft未发布  Normal已发布")
     private String status;
 
+    @ApiModelProperty(value = "封禁状态 0未封  1已封")
+    private Integer isLock;
+
     @ApiModelProperty(value = "逻辑删除 1（true）已删除， 0（false）未删除")
     private Integer isDeleted;
 

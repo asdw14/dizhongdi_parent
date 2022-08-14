@@ -1,5 +1,6 @@
 package com.dizhongdi.servicedzd.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.dizhongdi.servicedzd.entity.DzdArticle;
@@ -28,9 +29,14 @@ public interface DzdArticleService extends IService<DzdArticle> {
 //    根据id删除帖子
     boolean deleteByid(String id);
 
-    //分页条件查询
     Map<String, Object> pageList(Page<DzdArticle> pageParam, AticleQuery query);
 
     //修改帖子
     boolean updateArticle(CreateArticleVo articleVo);
+
+    //分页条件查询
+    IPage<DzdArticle> pageQuery(Page<DzdArticle> articlePage, AticleQuery articleQuery);
+
+    //修改发布状态
+    boolean updateStatus(String id);
 }
