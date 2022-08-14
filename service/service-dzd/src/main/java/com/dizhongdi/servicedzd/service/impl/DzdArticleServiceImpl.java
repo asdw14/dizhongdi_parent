@@ -148,8 +148,19 @@ public class DzdArticleServiceImpl extends ServiceImpl<DzdArticleMapper, DzdArti
     public boolean updateStatus(String id) {
         DzdArticle article = baseMapper.selectById(id);
         return this.updateById(
-                "Normal". equals(article.getStatus()) ?
-                        article.setStatus("Draft") :
-                        article.setStatus("Normal"));
+                "Draft".equals(article.getStatus()) ?
+                        article.setStatus("Normal") :
+                        article.setStatus("Draft"));
+    }
+
+    //更新帖子
+    @Override
+    public boolean updateInfo(String id, CreateArticleVo articleVo) {
+        DzdArticle article = new DzdArticle();
+        BeanUtils.copyProperties(articleVo,article);
+        article.setId(id);
+        DzdArticleDescription articleDescription = new DzdArticleDescription();
+
+        return this.updateById(article) && descriptionService.updateById(articleDescription.setId(id).setDescription(articleVo.getDescription()));
     }
 }

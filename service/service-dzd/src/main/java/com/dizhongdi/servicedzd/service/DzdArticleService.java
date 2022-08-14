@@ -39,4 +39,7 @@ public interface DzdArticleService extends IService<DzdArticle> {
 
     //修改发布状态
     boolean updateStatus(String id);
+
+    //更新帖子
+    boolean updateInfo(String id, CreateArticleVo articleVo);
 }

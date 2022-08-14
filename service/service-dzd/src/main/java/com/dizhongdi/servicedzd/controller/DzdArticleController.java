@@ -44,14 +44,14 @@ public class DzdArticleController {
     }
 
     @ApiOperation(value = "更新帖子")
-    @GetMapping("update/{id}")
+    @PutMapping("update/{id}")
     public R getById(@PathVariable String id,@RequestBody CreateArticleVo articleVo){
-        GetrAticleVo getrAticleVo = dzdArticleService.queryById(id);
-        return R.ok().data("item",getrAticleVo);
+        boolean falg = dzdArticleService.updateInfo(id,articleVo);
+        return R.ok();
     }
 
     @ApiOperation(value = "根据id获取帖子")
-    @PutMapping("articleInfo/{id}")
+    @GetMapping("articleInfo/{id}")
     public R getById(@PathVariable String id){
         GetrAticleVo getrAticleVo = dzdArticleService.queryById(id);
         return R.ok().data("item",getrAticleVo);
@@ -59,7 +59,7 @@ public class DzdArticleController {
 
 
     @ApiOperation(value = "修改发布状态")
-    @DeleteMapping("statusById/{id}")
+    @PutMapping("statusById/{id}")
     public R statusById(@PathVariable String id){
         if (dzdArticleService.updateStatus(id)){
             return R.ok();
