@@ -17,6 +17,7 @@ import com.dizhongdi.servicedzd.entity.vo.article.GetrAticleVo;
 import com.dizhongdi.servicedzd.mapper.DzdArticleMapper;
 import com.dizhongdi.servicedzd.service.DzdArticleDescriptionService;
 import com.dizhongdi.servicedzd.service.DzdArticleService;
+import com.dizhongdi.servicedzd.utils.MyCachedThread;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,7 @@ import org.springframework.stereotype.Service;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
 
 /**
  * <p>
@@ -43,6 +45,9 @@ public class DzdArticleServiceImpl extends ServiceImpl<DzdArticleMapper, DzdArti
     @Autowired
     RabbitService rabbitService;
 
+    //线程池
+    ExecutorService threadPool = MyCachedThread.getThreadPool();
+
     //发布文章
     @Override
     public boolean posting(CreateArticleVo articleVo) {
@@ -54,11 +59,18 @@ public class DzdArticleServiceImpl extends ServiceImpl<DzdArticleMapper, DzdArti
             descriptionService.save(new DzdArticleDescription().
                     setDescription(articleVo.getDescription()).setId(article.getId()));
 
-            //创建给ES发送的vo
-            EsArticleVo esArticleVo = new EsArticleVo().setId(article.getId());
-            BeanUtils.copyProperties(articleVo,esArticleVo);
-            String jsonArticle = JSONObject.toJSONString(esArticleVo);
-            rabbitService.sendMessage(MqConst.EXCHANGE_DIRECT_ARTICLE, MqConst.ROUTING_ARTICLE_SORU, jsonArticle);
+            //如果是发布才加入rabbit消息队列让es保存
+            if ("Normal".equals(articleVo.getStatus())) {
+                //通过多线程执行
+                threadPool.execute(()->{
+                    //创建给ES发送的vo
+                    EsArticleVo esArticleVo = new EsArticleVo().setId(article.getId());
+                    BeanUtils.copyProperties(articleVo,esArticleVo);
+                    String jsonArticle = JSONObject.toJSONString(esArticleVo);
+                    rabbitService.sendMessage(MqConst.EXCHANGE_DIRECT_ARTICLE, MqConst.ROUTING_ARTICLE_SORU, jsonArticle);
+            });
+
+            }
             return true;
         }
         return false;
@@ -81,7 +93,10 @@ public class DzdArticleServiceImpl extends ServiceImpl<DzdArticleMapper, DzdArti
     public boolean deleteByid(String id) {
         boolean falg1 = this.removeById(id);
         boolean falg2 = descriptionService.removeById(id);
-        rabbitService.sendMessage(MqConst.EXCHANGE_DIRECT_ARTICLE, MqConst.ROUTING_ARTICLE_SORU, id);
+        //通过多线程执行
+        threadPool.execute(()-> {
+            rabbitService.sendMessage(MqConst.EXCHANGE_DIRECT_ARTICLE, MqConst.ROUTING_ARTICLE_DELETE, id);
+        });
         return falg1 && falg2;
     }
 
@@ -135,7 +150,7 @@ public class DzdArticleServiceImpl extends ServiceImpl<DzdArticleMapper, DzdArti
     @Override
     public IPage<DzdArticle> pageQuery(Page<DzdArticle> articlePage, AticleQuery articleQuery) {
         QueryWrapper<DzdArticle> wrapper = new QueryWrapper<>();
-        wrapper.orderByAsc("gmt_modified");
+        wrapper.orderByDesc("gmt_modified");
         if (wrapper!=null){
 
         }
