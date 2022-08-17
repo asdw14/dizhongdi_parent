@@ -19,7 +19,7 @@ import java.util.List;
  * @Author:dizhongdi
  */
 @RestController
-@RequestMapping("/article")
+@RequestMapping("/api/article")
 public class ArticleController {
     @Autowired
     ArticleEsService articleEsService;

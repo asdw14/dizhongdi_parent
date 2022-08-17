@@ -52,7 +52,7 @@ public class UcenterMemberServiceImpl extends ServiceImpl<UcenterMemberMapper, U
         }
 
         //校验是否被禁用
-        if(member.getIsDisabled()) {
+        if(member.getIsDisabled()==0) {
             throw new DzdException(20001,"error");
         }
 
@@ -95,7 +95,7 @@ public class UcenterMemberServiceImpl extends ServiceImpl<UcenterMemberMapper, U
         ucenterMember.setMobile(mobile);
         ucenterMember.setPassword(MD5.encrypt(password));
         ucenterMember.setNickname(nickname);
-        ucenterMember.setIsDisabled(false);
+        ucenterMember.setIsDisabled(0);
         ucenterMember.setAvatar("https://dizhongdi-guli.oss-cn-hangzhou.aliyuncs.com/cover/1.jpg");
         this.save(ucenterMember);
 

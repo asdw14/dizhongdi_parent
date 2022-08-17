@@ -7,15 +7,15 @@ import org.springframework.web.bind.annotation.RestController;
 
 /**
  * <p>
- * 会员表 前端控制器
+ *  用户积分
  * </p>
  *
  * @author dizhongdi
- * @since 2022-07-08
+ * @since 2022-08-17
  */
 @RestController
-@RequestMapping("/serviceuser/ucenter-member")
-public class UcenterMemberController {
+@RequestMapping("/dzd-credit")
+public class DzdCreditController {
 
 }
 
