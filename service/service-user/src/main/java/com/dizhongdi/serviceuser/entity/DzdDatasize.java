@@ -1,5 +1,6 @@
 package com.dizhongdi.serviceuser.entity;
 
+import java.math.BigDecimal;
 import com.baomidou.mybatisplus.annotation.IdType;
 import java.util.Date;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -16,13 +17,13 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author dizhongdi
- * @since 2022-08-17
+ * @since 2022-08-18
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@ApiModel(value="用户积分", description="用户积分")
-public class DzdCredit implements Serializable {
+@ApiModel(value="用户空间大小", description="用户空间大小")
+public class DzdDatasize implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -30,8 +31,14 @@ public class DzdCredit implements Serializable {
     @TableId(value = "id", type = IdType.ID_WORKER_STR)
     private String id;
 
-    @ApiModelProperty(value = "用户积分")
-    private Long credit;
+    @ApiModelProperty(value = "总容量")
+    private BigDecimal datasize;
+
+    @ApiModelProperty(value = "剩余容量")
+    private BigDecimal surplus;
+
+    @ApiModelProperty(value = "是否可以上传文件")
+    private Integer status;
 
     @ApiModelProperty(value = "逻辑删除 1（true）已删除， 0（false）未删除")
     private Integer isDeleted;
