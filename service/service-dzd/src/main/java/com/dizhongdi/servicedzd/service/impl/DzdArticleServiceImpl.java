@@ -21,6 +21,7 @@ import com.dizhongdi.servicedzd.utils.MyCachedThread;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.HashMap;
 import java.util.List;
@@ -150,10 +151,43 @@ public class DzdArticleServiceImpl extends ServiceImpl<DzdArticleMapper, DzdArti
     @Override
     public IPage<DzdArticle> pageQuery(Page<DzdArticle> articlePage, AticleQuery articleQuery) {
         QueryWrapper<DzdArticle> wrapper = new QueryWrapper<>();
+
+        //按最新发布排序
         wrapper.orderByDesc("gmt_modified");
-        if (wrapper!=null){
+        System.out.println(articleQuery.getTitle());
+        if (!StringUtils.isEmpty(articleQuery.getTitle())){
+            wrapper.like("title",articleQuery.getTitle());
+        }
+        System.out.println(articleQuery.getBegin());
+
+        //是否有起始时间和终止时间同时存在
+        if (!(StringUtils.isEmpty(articleQuery.getBegin()) && StringUtils.isEmpty(articleQuery.getEnd()))){
+            //都有则做发布时间段
+            wrapper.between("gmt_modified",articleQuery.getBegin(),articleQuery.getEnd());
+
+            //小于终止日期
+        }else if (!StringUtils.isEmpty(articleQuery.getEnd())){
+            wrapper.le("gmt_modified",articleQuery.getEnd());
+
+            //大于开始日期
+        }else if (!StringUtils.isEmpty(articleQuery.getBegin())){
+            wrapper.ge("gmt_modified",articleQuery.getBegin());
+        }
+
+        //是否发布
+        if (!StringUtils.isEmpty(articleQuery.getStatus())){
+            wrapper.eq("status",articleQuery.getStatus());
 
         }
+
+        //文章类别
+        if (!StringUtils.isEmpty(articleQuery.getSubjectId())){
+            wrapper.eq("subject_id",articleQuery.getSubjectId());
+        }else if (!StringUtils.isEmpty(articleQuery.getSubjectParentId())){
+            wrapper.eq("subject_parent_id",articleQuery.getSubjectParentId());
+
+        }
+
         return baseMapper.selectPage(articlePage,wrapper);
 
     }

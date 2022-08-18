@@ -24,6 +24,9 @@ public class CreateArticleVo {
     @ApiModelProperty(value = "用户ID")
     private String memberId;
 
+    @ApiModelProperty(value = "帖子分类父ID")
+    private String subjectParentId;
+
     @ApiModelProperty(value = "帖子分类ID")
     private String subjectId;
 

@@ -36,6 +36,10 @@ public class GetrAticleVo {
     @ApiModelProperty(value = "文章内容")
     private String description;
 
+    @ApiModelProperty(value = "帖子分类父ID")
+    private String subjectParentId;
+
+
     @ApiModelProperty(value = "帖子分类ID")
     private String subjectId;
 

@@ -76,14 +76,15 @@ public class DzdArticleController {
 
     @ApiOperation(value = "分页获取帖子")
     @PostMapping("getPageList/{page}/{limit}")
-    public R getList(
+    public R getPageList(
             @ApiParam(name = "page", value = "当前页码", required = true)
             @PathVariable Long page,
 
             @ApiParam(name = "limit", value = "每页记录数", required = true)
             @PathVariable Long limit,
 
-            @ApiParam(name = "AticleQuery", value = "查询对象", required = false) AticleQuery articleQuery){
+            @ApiParam(name = "AticleQuery", value = "查询对象", required = false)
+            @RequestBody AticleQuery articleQuery){
         Page<DzdArticle> articlePage = new Page<>(page,limit);
         IPage<DzdArticle> articleIPage = dzdArticleService.pageQuery(articlePage,articleQuery);
         return R.ok().data("items" , articleIPage.getRecords()).data("total",articleIPage.getTotal());
