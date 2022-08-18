@@ -3,11 +3,10 @@ package com.dizhongdi.serviceuser.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.dizhongdi.servicebase.exceptionhandler.DzdException;
 import com.dizhongdi.servicebase.utils.MD5;
-import com.dizhongdi.serviceuser.entity.LoginInfo;
-import com.dizhongdi.serviceuser.entity.LoginVo;
-import com.dizhongdi.serviceuser.entity.RegisterVo;
-import com.dizhongdi.serviceuser.entity.UcenterMember;
+import com.dizhongdi.serviceuser.entity.*;
 import com.dizhongdi.serviceuser.mapper.UcenterMemberMapper;
+import com.dizhongdi.serviceuser.service.DzdCreditService;
+import com.dizhongdi.serviceuser.service.DzdDatasizeService;
 import com.dizhongdi.serviceuser.service.UcenterMemberService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.dizhongdi.serviceuser.utils.JwtUtils;
@@ -30,6 +29,12 @@ import org.springframework.util.StringUtils;
 public class UcenterMemberServiceImpl extends ServiceImpl<UcenterMemberMapper, UcenterMember> implements UcenterMemberService {
     @Autowired
     RedisTemplate redisTemplate;
+
+    @Autowired
+    DzdCreditService creditService;
+
+    @Autowired
+    DzdDatasizeService datasizeService;
 
     @Override
     public String login(LoginVo loginVo) {
@@ -98,6 +103,10 @@ public class UcenterMemberServiceImpl extends ServiceImpl<UcenterMemberMapper, U
         ucenterMember.setIsDisabled(0);
         ucenterMember.setAvatar("https://dizhongdi-guli.oss-cn-hangzhou.aliyuncs.com/cover/1.jpg");
         this.save(ucenterMember);
+
+        String id = ucenterMember.getId();
+        creditService.save(new DzdCredit().setId(id));
+        datasizeService.save(new DzdDatasize().setId(id));
 
     }
 
