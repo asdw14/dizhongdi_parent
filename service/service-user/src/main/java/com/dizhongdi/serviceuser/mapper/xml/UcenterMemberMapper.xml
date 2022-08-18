@@ -6,4 +6,6 @@
         select count(1) from ucenter_member where DATE(gmt_create) = #{day}
     </select>
 
+
+
 </mapper>

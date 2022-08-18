@@ -1,7 +1,13 @@
 package com.dizhongdi.serviceuser.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.dizhongdi.serviceuser.entity.UcenterMember;
+import com.dizhongdi.serviceuser.entity.vo.AdminGetUserVo;
+import com.dizhongdi.serviceuser.entity.vo.UserQuery;
+
+import java.util.List;
 
 /**
  * ClassName:UserAdminService
@@ -15,5 +21,11 @@ public interface UserAdminService extends IService<UcenterMember> {
     //封禁解封用户
     boolean disabledUser(String id);
 
+
+    //分页查询用户所有信息
+    List<AdminGetUserVo> pageQueryList(Page<UcenterMember> userPage, UserQuery userQuery);
+
+    //根据id获取用户所有信息
+    AdminGetUserVo queryById(String id);
 
 }
