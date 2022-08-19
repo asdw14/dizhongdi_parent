@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.dizhongdi.serviceuser.entity.UcenterMember;
-import com.dizhongdi.serviceuser.entity.vo.AdminGetUserVo;
+import com.dizhongdi.model.AdminGetUserVo;
 import com.dizhongdi.serviceuser.entity.vo.UserQuery;
 
 import java.util.List;

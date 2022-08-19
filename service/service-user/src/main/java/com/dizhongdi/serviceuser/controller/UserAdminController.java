@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.dizhongdi.result.R;
 import com.dizhongdi.serviceuser.entity.UcenterMember;
-import com.dizhongdi.serviceuser.entity.vo.AdminGetUserVo;
+import com.dizhongdi.model.AdminGetUserVo;
 import com.dizhongdi.serviceuser.entity.vo.UserQuery;
 import com.dizhongdi.serviceuser.service.DzdCreditService;
 import com.dizhongdi.serviceuser.service.UserAdminService;
@@ -60,8 +60,7 @@ public class UserAdminController {
 
     @ApiOperation(value = "根据id获取用户所有的信息")
     @GetMapping("userAllInfo/{id}")
-    public R getAllInfoId(@PathVariable String id){
-        AdminGetUserVo userVo = userAdminService.queryById(id);
-        return R.ok().data("item",userVo);
+    public AdminGetUserVo getAllInfoId(@PathVariable String id){
+        return userAdminService.queryById(id);
     }
 }

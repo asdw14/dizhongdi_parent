@@ -8,6 +8,7 @@ import com.dizhongdi.servicedzd.entity.DzdArticle;
 import com.dizhongdi.servicedzd.entity.vo.article.AticleQuery;
 import com.dizhongdi.servicedzd.entity.vo.article.CreateArticleVo;
 import com.dizhongdi.servicedzd.entity.vo.article.GetrAticleVo;
+import com.dizhongdi.servicedzd.entity.vo.article.GetrUserAticleVo;
 import com.dizhongdi.servicedzd.service.DzdArticleService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -15,6 +16,7 @@ import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -65,6 +67,16 @@ public class DzdArticleController {
         }
         return R.error();
     }
+
+    @ApiOperation(value = "修改帖子封禁状态")
+    @PutMapping("lockById/{id}")
+    public R lockById(@PathVariable String id){
+        if (dzdArticleService.updateLock(id)){
+            return R.ok();
+        }
+        return R.error();
+    }
+
     @ApiOperation(value = "根据id删除帖子")
     @DeleteMapping("removeById/{id}")
     public R deleteById(@PathVariable String id){
@@ -88,6 +100,23 @@ public class DzdArticleController {
         Page<DzdArticle> articlePage = new Page<>(page,limit);
         IPage<DzdArticle> articleIPage = dzdArticleService.pageQuery(articlePage,articleQuery);
         return R.ok().data("items" , articleIPage.getRecords()).data("total",articleIPage.getTotal());
+    }
+
+    @ApiOperation(value = "分页获取用户帖子")
+    @PostMapping("getUserPageList/{page}/{limit}")
+    public R getUserPageList(
+            @ApiParam(name = "page", value = "当前页码", required = true)
+            @PathVariable Long page,
+
+            @ApiParam(name = "limit", value = "每页记录数", required = true)
+            @PathVariable Long limit,
+
+            @ApiParam(name = "AticleQuery", value = "查询对象", required = false)
+            @RequestBody AticleQuery articleQuery){
+
+        Page<DzdArticle> articlePage = new Page<>(page,limit);
+        List<GetrUserAticleVo> userAticleVo = dzdArticleService.pageUserQuery(articlePage,articleQuery);
+        return R.ok().data("items" , userAticleVo).data("total",articlePage.getTotal());
     }
 }
 

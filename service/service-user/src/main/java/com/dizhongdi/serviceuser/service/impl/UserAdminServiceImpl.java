@@ -7,7 +7,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.dizhongdi.serviceuser.entity.DzdCredit;
 import com.dizhongdi.serviceuser.entity.DzdDatasize;
 import com.dizhongdi.serviceuser.entity.UcenterMember;
-import com.dizhongdi.serviceuser.entity.vo.AdminGetUserVo;
+import com.dizhongdi.model.AdminGetUserVo;
 import com.dizhongdi.serviceuser.entity.vo.UserQuery;
 import com.dizhongdi.serviceuser.mapper.UcenterMemberMapper;
 import com.dizhongdi.serviceuser.service.DzdCreditService;

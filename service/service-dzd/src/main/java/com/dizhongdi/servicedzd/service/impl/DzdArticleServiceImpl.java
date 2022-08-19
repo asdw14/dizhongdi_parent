@@ -6,14 +6,17 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.dizhongdi.model.AdminGetUserVo;
 import com.dizhongdi.model.EsArticleVo;
 import com.dizhongdi.rabbit.config.MqConst;
 import com.dizhongdi.rabbit.service.RabbitService;
+import com.dizhongdi.servicedzd.client.UserClient;
 import com.dizhongdi.servicedzd.entity.DzdArticle;
 import com.dizhongdi.servicedzd.entity.DzdArticleDescription;
 import com.dizhongdi.servicedzd.entity.vo.article.AticleQuery;
 import com.dizhongdi.servicedzd.entity.vo.article.CreateArticleVo;
 import com.dizhongdi.servicedzd.entity.vo.article.GetrAticleVo;
+import com.dizhongdi.servicedzd.entity.vo.article.GetrUserAticleVo;
 import com.dizhongdi.servicedzd.mapper.DzdArticleMapper;
 import com.dizhongdi.servicedzd.service.DzdArticleDescriptionService;
 import com.dizhongdi.servicedzd.service.DzdArticleService;
@@ -23,6 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,6 +49,10 @@ public class DzdArticleServiceImpl extends ServiceImpl<DzdArticleMapper, DzdArti
 
     @Autowired
     RabbitService rabbitService;
+
+    //feign远程调用user服务
+    @Autowired
+    UserClient userClient;
 
     //线程池
     ExecutorService threadPool = MyCachedThread.getThreadPool();
@@ -148,6 +156,7 @@ public class DzdArticleServiceImpl extends ServiceImpl<DzdArticleMapper, DzdArti
         return flag1 && flag2;
     }
 
+    //分页获取管理员帖子
     @Override
     public IPage<DzdArticle> pageQuery(Page<DzdArticle> articlePage, AticleQuery articleQuery) {
         QueryWrapper<DzdArticle> wrapper = new QueryWrapper<>();
@@ -211,5 +220,84 @@ public class DzdArticleServiceImpl extends ServiceImpl<DzdArticleMapper, DzdArti
         DzdArticleDescription articleDescription = new DzdArticleDescription();
 
         return this.updateById(article) && descriptionService.updateById(articleDescription.setId(id).setDescription(articleVo.getDescription()));
+    }
+
+    //分页获取用户帖子
+    @Override
+    public List<GetrUserAticleVo> pageUserQuery(Page<DzdArticle> articlePage, AticleQuery articleQuery) {
+        QueryWrapper<DzdArticle> wrapper = new QueryWrapper<>();
+
+        List<GetrUserAticleVo> userAticleVos = new ArrayList<>();
+
+        //按最新发布排序
+        wrapper.orderByDesc("gmt_modified");
+        System.out.println(articleQuery.getTitle());
+        if (!StringUtils.isEmpty(articleQuery.getTitle())){
+            wrapper.like("title",articleQuery.getTitle());
+        }
+        System.out.println(articleQuery.getBegin());
+
+        wrapper.ne("member_id","1");
+
+        //是否有起始时间和终止时间同时存在
+        if (!(StringUtils.isEmpty(articleQuery.getBegin()) && StringUtils.isEmpty(articleQuery.getEnd()))){
+            //都有则做发布时间段
+            wrapper.between("gmt_modified",articleQuery.getBegin(),articleQuery.getEnd());
+
+            //小于终止日期
+        }else if (!StringUtils.isEmpty(articleQuery.getEnd())){
+            wrapper.le("gmt_modified",articleQuery.getEnd());
+
+            //大于开始日期
+        }else if (!StringUtils.isEmpty(articleQuery.getBegin())){
+            wrapper.ge("gmt_modified",articleQuery.getBegin());
+        }
+
+        //是否发布
+        if (!StringUtils.isEmpty(articleQuery.getStatus())){
+            wrapper.eq("status",articleQuery.getStatus());
+
+        }
+
+        //是否封禁
+        if (!StringUtils.isEmpty(articleQuery.getIsLock())){
+            wrapper.eq("is_lock",articleQuery.getIsLock());
+
+        }
+
+        //根据用户id或文章id搜索
+        if (!StringUtils.isEmpty(articleQuery.getId())){
+            wrapper.eq("id",articleQuery.getId()).or().eq("member_id",articleQuery.getId());
+
+        }
+
+        //文章类别
+        if (!StringUtils.isEmpty(articleQuery.getSubjectId())){
+            wrapper.eq("subject_id",articleQuery.getSubjectId());
+        }else if (!StringUtils.isEmpty(articleQuery.getSubjectParentId())){
+            wrapper.eq("subject_parent_id",articleQuery.getSubjectParentId());
+
+        }
+
+        //远程调用获取帖子发布用户头像和昵称
+        IPage<DzdArticle> selectPage = baseMapper.selectPage(articlePage, wrapper);
+        selectPage.getRecords().stream().map(article -> {
+            GetrUserAticleVo userAticleVo = new GetrUserAticleVo();
+            AdminGetUserVo userinfo = userClient.getAllInfoId(article.getMemberId());
+            BeanUtils.copyProperties(article,userAticleVo);
+            userAticleVo.setAvatar(userinfo.getAvatar()).setNickname(userinfo.getNickname());
+            return userAticleVo;
+        }).forEach( userAticleVo -> userAticleVos.add(userAticleVo));
+
+        return userAticleVos;
+    }
+
+    //修改帖子封禁状态
+    @Override
+    public boolean updateLock(String id) {
+        DzdArticle article = baseMapper.selectById(id);
+        //0改为1，1改为0
+        return this.updateById(
+                article.setIsLock(article.getIsLock()==0 ? 1 : 0));
     }
 }

@@ -20,6 +20,9 @@ import lombok.experimental.Accessors;
 @ApiModel(value="帖子查询", description="帖子查询条件vo")
 public class AticleQuery {
 
+    @ApiModelProperty(value = "帖子ID")
+    private String id;
+
     @ApiModelProperty(value = "用户ID")
     private String memberId;
 

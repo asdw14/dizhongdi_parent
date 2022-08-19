@@ -24,7 +24,6 @@ import java.util.Date;
 @ApiModel(value="user返回对象", description="user返回对象")
 public class AdminGetUserVo {
     @ApiModelProperty(value = "会员id")
-    @TableId(type = IdType.ID_WORKER_STR)
     private String id;
 
     @ApiModelProperty(value = "微信openid")
@@ -59,10 +58,8 @@ public class AdminGetUserVo {
 
 
     @ApiModelProperty(value = "创建时间")
-    @TableField(fill = FieldFill.INSERT)
     private Date gmtCreate;
 
     @ApiModelProperty(value = "更新时间")
-    @TableField(fill = FieldFill.INSERT_UPDATE)
     private Date gmtModified;
 }

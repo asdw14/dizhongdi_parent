@@ -7,7 +7,9 @@ import com.dizhongdi.servicedzd.entity.DzdArticle;
 import com.dizhongdi.servicedzd.entity.vo.article.AticleQuery;
 import com.dizhongdi.servicedzd.entity.vo.article.CreateArticleVo;
 import com.dizhongdi.servicedzd.entity.vo.article.GetrAticleVo;
+import com.dizhongdi.servicedzd.entity.vo.article.GetrUserAticleVo;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -42,4 +44,10 @@ public interface DzdArticleService extends IService<DzdArticle> {
 
     //更新帖子
     boolean updateInfo(String id, CreateArticleVo articleVo);
+
+//    分页获取用户帖子
+    List<GetrUserAticleVo> pageUserQuery(Page<DzdArticle> articlePage, AticleQuery articleQuery);
+
+//    修改帖子封禁状态
+    boolean updateLock(String id);
 }
