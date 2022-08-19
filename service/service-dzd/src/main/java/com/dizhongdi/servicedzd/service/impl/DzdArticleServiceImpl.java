@@ -163,6 +163,10 @@ public class DzdArticleServiceImpl extends ServiceImpl<DzdArticleMapper, DzdArti
 
         //按最新发布排序
         wrapper.orderByDesc("gmt_modified");
+
+        //获取管理员发布的
+        wrapper.eq("member_id","1");
+
         System.out.println(articleQuery.getTitle());
         if (!StringUtils.isEmpty(articleQuery.getTitle())){
             wrapper.like("title",articleQuery.getTitle());
