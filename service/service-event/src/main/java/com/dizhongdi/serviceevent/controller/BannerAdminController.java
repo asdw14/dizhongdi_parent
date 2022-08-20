@@ -28,7 +28,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/admin/event/banner")
 @Api(description = "banner后台管理")
-public class CrmBannerController {
+public class BannerAdminController {
 
     @Autowired
     CrmBannerService bannerService;

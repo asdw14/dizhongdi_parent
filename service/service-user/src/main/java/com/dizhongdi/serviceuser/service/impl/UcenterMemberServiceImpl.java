@@ -42,23 +42,23 @@ public class UcenterMemberServiceImpl extends ServiceImpl<UcenterMemberMapper, U
         String password = loginVo.getPassword();
         //校验参数
         if(StringUtils.isEmpty(mobile) || StringUtils.isEmpty(password) ) {
-            throw new DzdException(20001,"error");
+            throw new DzdException(20001,"手机号或密码输入有误");
         }
 
         //获取会员
         UcenterMember member = this.getOne(new QueryWrapper<UcenterMember>().eq("mobile", mobile));
         if (null == member){
-            throw new DzdException(20001,"error");
+            throw new DzdException(20001,"您还未进行注册");
 
         }
         //校验密码
         if(!MD5.encrypt(password).equals(member.getPassword())) {
-            throw new DzdException(20001,"error");
+            throw new DzdException(20001,"密码错误");
         }
 
         //校验是否被禁用
-        if(member.getIsDisabled()==0) {
-            throw new DzdException(20001,"error");
+        if(member.getIsDisabled()!=0) {
+            throw new DzdException(20001,"该用户已被封禁");
         }
 
         //使用JWT生成token字符串
@@ -101,7 +101,7 @@ public class UcenterMemberServiceImpl extends ServiceImpl<UcenterMemberMapper, U
         ucenterMember.setPassword(MD5.encrypt(password));
         ucenterMember.setNickname(nickname);
         ucenterMember.setIsDisabled(0);
-        ucenterMember.setAvatar("https://dizhongdi-guli.oss-cn-hangzhou.aliyuncs.com/cover/1.jpg");
+        ucenterMember.setAvatar("https://dizhongdi-parent.oss-cn-hangzhou.aliyuncs.com/cover/favicon.jpg");
         this.save(ucenterMember);
 
         String id = ucenterMember.getId();

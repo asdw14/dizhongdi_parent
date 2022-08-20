@@ -1,4 +1,4 @@
-package com.dizhongdi.serviceevent.controller;
+package com.dizhongdi.serviceevent.controller.api;
 
 import com.dizhongdi.result.R;
 import com.dizhongdi.serviceevent.entity.CrmBanner;

@@ -20,6 +20,7 @@ import java.util.Date;
 @Accessors(chain = true)
 public class AdminGetUserVo {
     private String id;
+
     private String openid;
 
     private String mobile;
