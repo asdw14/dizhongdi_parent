@@ -21,7 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Api(description="阿里云文件管理")
 //@CrossOrigin //跨域
 @RestController
-@RequestMapping("/api/dzdoss/file")
+@RequestMapping("/api/oss/file")
 public class FileController {
     @Autowired
     private FileService fileService;
