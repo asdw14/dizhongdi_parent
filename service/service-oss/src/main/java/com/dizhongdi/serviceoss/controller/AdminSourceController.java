@@ -1,8 +1,7 @@
-package com.dizhongdi.serviceoss.controller.api;
+package com.dizhongdi.serviceoss.controller;
 
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.dizhongdi.model.AdminGetUserVo;
 import com.dizhongdi.result.R;
 import com.dizhongdi.serviceoss.entity.DzdSource;
 import com.dizhongdi.serviceoss.entity.vo.SourceInfoVo;
@@ -11,11 +10,8 @@ import com.dizhongdi.serviceoss.service.DzdSourceService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import org.apache.ibatis.session.SqlSessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -28,14 +24,14 @@ import java.util.List;
  * @since 2022-08-21
  */
 @RestController
-@RequestMapping("/api/oss/source")
-@Api(description="前台资源api")
-public class DzdSourceController {
+@RequestMapping("/admin/oss/source")
+@Api(description="后台资源管理")
+public class AdminSourceController {
 
     @Autowired
     DzdSourceService sourceService;
 
-    @ApiOperation(value = "分页获取公开资源")
+    @ApiOperation(value = "后台分页获取公开资源")
     @PostMapping("getPublicPageList/{page}/{limit}")
     public R getPublicPageList(
             @ApiParam(name = "page", value = "当前页码", required = true)
@@ -47,7 +43,7 @@ public class DzdSourceController {
             @ApiParam(name = "UserQuery", value = "查询对象", required = false)
             @RequestBody SourceQuery userQuery){
         Page<DzdSource> sourcePage = new Page<>(page,limit);
-        List<SourceInfoVo> queryList = sourceService.getPublicPageList(sourcePage,userQuery,false);
+        List<SourceInfoVo> queryList = sourceService.getPublicPageList(sourcePage,userQuery,true);
         return R.ok().data("items" , queryList).data("total",sourcePage.getTotal());
     }
 }

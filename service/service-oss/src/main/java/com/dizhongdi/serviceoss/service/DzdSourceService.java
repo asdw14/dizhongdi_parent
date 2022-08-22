@@ -18,6 +18,6 @@ import java.util.List;
  */
 public interface DzdSourceService extends IService<DzdSource> {
 
-    //分页获取公开资源
-    List<SourceInfoVo> getPublicPageList(Page<DzdSource> sourcePage, SourceQuery userQuery);
+    //分页获取公开资源，根据用户还是管理员分配不同推荐算法
+    List<SourceInfoVo> getPublicPageList(Page<DzdSource> sourcePage, SourceQuery sourceQuery, Boolean isAdmin);
 }

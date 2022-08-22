@@ -38,11 +38,11 @@ public class SourceQuery implements Serializable {
     @ApiModelProperty(value = "简短的资源描述")
     private String sourceName;
 
-    @ApiModelProperty(value = "文件大小：MB")
-    private BigDecimal fileSize;
+    @ApiModelProperty(value = "最小文件大小：MB")
+    private BigDecimal minfileSize;
+    @ApiModelProperty(value = "最大文件大小：MB")
+    private BigDecimal maxfileSize;
 
-    @ApiModelProperty(value = "OSS云端保存资源URL")
-    private String sourceOssUrl;
 
     @ApiModelProperty(value = "原始文件名称")
     private String originalName;
@@ -60,19 +60,16 @@ public class SourceQuery implements Serializable {
     private String isPublic;
 
     @ApiModelProperty(value = "是否封禁 ：0未封，1封禁")
-    private Integer isBan;
+    private Boolean isBan;
 
     @ApiModelProperty(value = "是否收费 ：0免费，1收费")
-    private Integer isCharge;
+    private Boolean isCharge;
 
     @ApiModelProperty(value = "逻辑删除 1（true）已删除， 0（false）未删除")
     private Integer isDeleted;
 
     @ApiModelProperty(value = "创建时间")
     private Date gmtCreate;
-
-    @ApiModelProperty(value = "更新时间")
-    private Date gmtModified;
 
 
 }
