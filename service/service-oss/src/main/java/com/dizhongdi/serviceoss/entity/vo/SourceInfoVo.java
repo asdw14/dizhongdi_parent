@@ -43,7 +43,7 @@ public class SourceInfoVo {
     private String sourceName;
 
     @ApiModelProperty(value = "文件大小：MB")
-    private Long fileSize;
+    private BigDecimal fileSize;
 
     @ApiModelProperty(value = "OSS云端保存资源URL")
     private String sourceOssUrl;
@@ -57,7 +57,7 @@ public class SourceInfoVo {
     @ApiModelProperty(value = "销售数量")
     private Long buyCount;
 
-    @ApiModelProperty(value = "浏览数量")
+    @ApiModelProperty(value = "下载数量")
     private Long downCount;
 
     @ApiModelProperty(value = "资源状态 ：0私有，1公开")

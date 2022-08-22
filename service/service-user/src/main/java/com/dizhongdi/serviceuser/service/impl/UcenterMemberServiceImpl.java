@@ -122,7 +122,7 @@ public class UcenterMemberServiceImpl extends ServiceImpl<UcenterMemberMapper, U
         return loginInfo;
     }
 
-    @Cacheable(value = "openid", key = "'info'")
+//    @Cacheable(value = "openid", key = "'info'")
     @Override
     public UcenterMember getByOpenid(String openid) {
 

@@ -73,6 +73,8 @@ public class WxApiController {
         HashMap map = gson.fromJson(result, HashMap.class);
         String accessToken = (String)map.get("access_token");
         String openid = (String)map.get("openid");
+        System.out.println("openid--------" + openid);
+        System.out.println(map.toString());
         if (openid==null){
             return "redirect:http://localhost:8160/api/ucenter/wx/login";
 

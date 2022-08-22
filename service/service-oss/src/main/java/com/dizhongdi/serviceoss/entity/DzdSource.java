@@ -44,7 +44,7 @@ public class DzdSource implements Serializable {
     private String sourceName;
 
     @ApiModelProperty(value = "文件大小：MB")
-    private Long fileSize;
+    private BigDecimal fileSize;
 
     @ApiModelProperty(value = "OSS云端保存资源URL")
     private String sourceOssUrl;
