@@ -46,5 +46,39 @@ public class AdminSourceController {
         List<SourceInfoVo> queryList = sourceService.getPublicPageList(sourcePage,userQuery,true);
         return R.ok().data("items" , queryList).data("total",sourcePage.getTotal());
     }
+
+    @ApiOperation(value = "更新资源信息，如资源名称之类")
+    @PutMapping("update/{id}")
+    public R getById(@PathVariable String id,@RequestBody DzdSource source){
+        boolean falg = sourceService.updateInfo(id,source);
+        return R.ok();
+    }
+
+    @ApiOperation(value = "根据id获取资源")
+    @GetMapping("sourceInfo/{id}")
+    public R getSourceInfoById(@PathVariable String id){
+        SourceInfoVo sourceInfo = sourceService.getInfoById(id);
+        return R.ok().data("item",sourceInfo);
+    }
+
+    @ApiOperation(value = "根据id修改封禁状态，封禁改为未封禁，未封禁改为封禁")
+    @PutMapping("banById/{id}")
+    public R banById(@PathVariable String id){
+        if (sourceService.updateBan(id)){
+            return R.ok();
+        }
+        return R.error();
+    }
+
+    @ApiOperation(value = "根据id删除资源,包括oss上保存的文件")
+    @DeleteMapping("removeById/{id}")
+    public R deleteById(@PathVariable String id){
+        if (sourceService.deleteByid(id)){
+            return R.ok().message("删除成功");
+        }
+        return R.error().message("删除失败");
+    }
+    
+    
 }
 

@@ -20,4 +20,16 @@ public interface DzdSourceService extends IService<DzdSource> {
 
     //分页获取公开资源，根据用户还是管理员分配不同推荐算法
     List<SourceInfoVo> getPublicPageList(Page<DzdSource> sourcePage, SourceQuery sourceQuery, Boolean isAdmin);
+
+//    更新资源信息，如资源名称之类
+    boolean updateInfo(String id, DzdSource source);
+
+    //根据id修改封禁状态，封禁改为未封禁，未封禁改为封禁
+    boolean updateBan(String id);
+
+    //根据id获取资源
+    SourceInfoVo getInfoById(String id);
+
+    //根据id删除资源,包括oss上保存的文件
+    boolean deleteByid(String id);
 }

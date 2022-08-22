@@ -2,6 +2,7 @@ package com.dizhongdi.serviceoss.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.dizhongdi.model.AdminGetUserVo;
 import com.dizhongdi.serviceoss.client.UserClient;
 import com.dizhongdi.serviceoss.entity.DzdSource;
 import com.dizhongdi.serviceoss.entity.vo.SourceInfoVo;
@@ -80,7 +81,6 @@ public class DzdSourceServiceImpl extends ServiceImpl<DzdSourceMapper, DzdSource
                     wrapper.eq("is_charge", 1);
                 }
             }
-
         }
 
         List<DzdSource> records = this.page(sourcePage, wrapper).getRecords();
@@ -88,10 +88,56 @@ public class DzdSourceServiceImpl extends ServiceImpl<DzdSourceMapper, DzdSource
             SourceInfoVo source = new SourceInfoVo();
             BeanUtils.copyProperties(record,source);
             //获取用户头像昵称
-            BeanUtils.copyProperties(userClient.getAllInfoId(record.getUserId()),source);
+            AdminGetUserVo user = userClient.getAllInfoId(record.getUserId());
+            source.setAvatar(user.getAvatar()).setUserId(user.getId());
             return source;
         }).forEach(source -> sourcesList.add(source));
 
         return sourcesList;
+    }
+
+    //更新资源信息，如资源名称之类
+    @Override
+    public boolean updateInfo(String id, DzdSource source) {
+        return this.updateById(source.setId(id));
+    }
+
+    //根据id修改封禁状态，封禁改为未封禁，未封禁改为封禁
+    @Override
+    public boolean updateBan(String id) {
+        DzdSource source = baseMapper.selectById(id);
+        if (source==null)
+            return false;
+        return
+                this.updateById(
+                        (source.getIsBan() == 0 ?
+                                source.setIsBan(1) : source.setIsBan(0)));
+    }
+
+    //根据id获取资源
+    @Override
+    public SourceInfoVo getInfoById(String id) {
+        //获取资源信息
+        DzdSource source = this.getById(id);
+        SourceInfoVo sourceInfo = new SourceInfoVo();
+        BeanUtils.copyProperties(source,sourceInfo);
+        //远程调用根据用户id获取用户信息
+        AdminGetUserVo user = userClient.getAllInfoId(id);
+        sourceInfo.setAvatar(user.getAvatar()).setUserId(user.getId());
+        return sourceInfo;
+    }
+
+
+    //根据id删除资源,包括oss上保存的文件
+    @Override
+    public boolean deleteByid(String id) {
+        boolean flag = this.removeById(id);
+
+        //待完善删除云端资源
+
+
+        if (flag)
+            return true;
+        return false;
     }
 }

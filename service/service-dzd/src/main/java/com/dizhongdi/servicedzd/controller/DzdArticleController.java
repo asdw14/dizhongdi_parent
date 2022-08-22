@@ -47,7 +47,7 @@ public class DzdArticleController {
 
     @ApiOperation(value = "更新帖子")
     @PutMapping("update/{id}")
-    public R getById(@PathVariable String id,@RequestBody CreateArticleVo articleVo){
+    public R updateById(@PathVariable String id,@RequestBody CreateArticleVo articleVo){
         boolean falg = dzdArticleService.updateInfo(id,articleVo);
         return R.ok();
     }

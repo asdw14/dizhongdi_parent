@@ -53,7 +53,7 @@ public class SourceQuery implements Serializable {
     @ApiModelProperty(value = "销售数量")
     private Long buyCount;
 
-    @ApiModelProperty(value = "浏览数量")
+    @ApiModelProperty(value = "xiazai数量")
     private Long downCount;
 
     @ApiModelProperty(value = "资源状态 ：0私有，1公开")
