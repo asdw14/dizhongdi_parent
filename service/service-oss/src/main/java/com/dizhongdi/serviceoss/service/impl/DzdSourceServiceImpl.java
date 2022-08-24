@@ -89,7 +89,7 @@ public class DzdSourceServiceImpl extends ServiceImpl<DzdSourceMapper, DzdSource
             BeanUtils.copyProperties(record,source);
             //获取用户头像昵称
             AdminGetUserVo user = userClient.getAllInfoId(record.getUserId());
-            source.setAvatar(user.getAvatar()).setUserId(user.getId());
+            source.setAvatar(user.getAvatar()).setNickname(user.getNickname());
             return source;
         }).forEach(source -> sourcesList.add(source));
 

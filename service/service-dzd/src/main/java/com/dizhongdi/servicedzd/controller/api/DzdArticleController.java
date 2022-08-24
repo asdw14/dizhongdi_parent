@@ -1,13 +1,11 @@
-package com.dizhongdi.servicedzd.controller.front;
+package com.dizhongdi.servicedzd.controller.api;
 
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.dizhongdi.rabbit.service.RabbitService;
 import com.dizhongdi.result.R;
 import com.dizhongdi.servicedzd.entity.DzdArticle;
-import com.dizhongdi.servicedzd.entity.vo.article.AticleQuery;
-import com.dizhongdi.servicedzd.entity.vo.article.CreateArticleVo;
-import com.dizhongdi.servicedzd.entity.vo.article.GetrAticleVo;
+import com.dizhongdi.servicedzd.entity.vo.article.*;
 import com.dizhongdi.servicedzd.service.DzdArticleService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -27,9 +25,9 @@ import java.util.Map;
  * @since 2022-08-09
  */
 @RestController
-@RequestMapping("/api/dzd/article/")
+@RequestMapping("/api/dzd/article")
 @Api(description="帖子前台")
-public class ArticleController {
+public class DzdArticleController {
 
     @Autowired
     DzdArticleService dzdArticleService;
@@ -72,20 +70,21 @@ public class ArticleController {
         return R.ok().message("文章修改成功");
     }
 
-    @ApiOperation(value = "分页获取帖子")
-    @PostMapping("{page}/{limit}")
-    public R getList(
+    @ApiOperation(value = "前台分页获取帖子")
+    @PostMapping("getPageList/{page}/{limit}")
+    public R getUserPageList(
             @ApiParam(name = "page", value = "当前页码", required = true)
             @PathVariable Long page,
 
             @ApiParam(name = "limit", value = "每页记录数", required = true)
             @PathVariable Long limit,
 
-            @ApiParam(name = "AticleQuery", value = "查询对象", required = false) AticleQuery query){
-        Page<DzdArticle> pageParam = new Page<>();
+            @ApiParam(name = "AticleQuery", value = "查询对象", required = false)
+            @RequestBody AticleQuery articleQuery){
 
-        Map<String,Object> pageList =  dzdArticleService.pageList(pageParam,query);
-        return R.ok().data("items",pageList);
+        Page<DzdArticle> articlePage = new Page<>(page,limit);
+        List<GetAllAticleVo> allAticleList = dzdArticleService.pageAllArticleQuery(articlePage,articleQuery);
+        return R.ok().data("items" , allAticleList).data("total",articlePage.getTotal());
     }
 }
 

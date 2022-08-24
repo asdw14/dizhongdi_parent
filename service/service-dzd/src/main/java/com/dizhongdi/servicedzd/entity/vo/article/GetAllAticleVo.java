@@ -1,54 +1,56 @@
-package com.dizhongdi.servicedzd.entity;
+package com.dizhongdi.servicedzd.entity.vo.article;
 
-import java.math.BigDecimal;
-
-import com.baomidou.mybatisplus.annotation.FieldFill;
-import com.baomidou.mybatisplus.annotation.IdType;
-import java.util.Date;
-
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
+import java.math.BigDecimal;
+import java.util.Date;
+
 /**
- * <p>
- * 课程
- * </p>
+ * ClassName:GetAllAticleVo
+ * Package:com.dizhongdi.servicedzd.entity.vo.article
+ * Description:
  *
- * @author dizhongdi
- * @since 2022-08-09
+ * @Date: 2022/8/24 20:38
+ * @Author:dizhongdi
  */
+
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@ApiModel(value="文章", description="帖子")
-public class DzdArticle implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+@ApiModel(value="帖子", description="单条帖子信息")
+public class GetAllAticleVo {
 
     @ApiModelProperty(value = "帖子ID")
-    @TableId(value = "id", type = IdType.ID_WORKER_STR)
     private String id;
 
     @ApiModelProperty(value = "用户ID")
     private String memberId;
 
+    @ApiModelProperty(value = "用户名")
+    private String nickname;
+
+    @ApiModelProperty(value = "用户头像")
+    private String avatar;
+
+    @ApiModelProperty(value = "文章内容")
+    private String description;
+
+    @ApiModelProperty(value = "文章前几句大概")
+    private String summary;
+
     @ApiModelProperty(value = "帖子分类父ID")
     private String subjectParentId;
+
 
     @ApiModelProperty(value = "帖子分类ID")
     private String subjectId;
 
     @ApiModelProperty(value = "帖子标题")
     private String title;
-
-    @ApiModelProperty(value = "文章前几句大概")
-    private String summary;
 
     @ApiModelProperty(value = "资源价格，设置为0则可免费观看")
     private BigDecimal price;
@@ -62,8 +64,8 @@ public class DzdArticle implements Serializable {
     @ApiModelProperty(value = "浏览数量")
     private Long viewCount;
 
-    @ApiModelProperty(value = "乐观锁")
-    private Long version;
+    @ApiModelProperty(value = "评论数量")
+    private Integer commentCount;
 
     @ApiModelProperty(value = "帖子状态 Draft未发布  Normal已发布")
     private String status;
@@ -75,12 +77,9 @@ public class DzdArticle implements Serializable {
     private Integer isDeleted;
 
     @ApiModelProperty(value = "创建时间")
-    @TableField(fill = FieldFill.INSERT)
     private Date gmtCreate;
 
     @ApiModelProperty(value = "更新时间")
-    @TableField(fill = FieldFill.INSERT_UPDATE)
     private Date gmtModified;
-
 
 }

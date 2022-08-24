@@ -30,7 +30,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/admin/dzd/article/")
 @Api(description="帖子后台管理")
-public class DzdArticleController {
+public class AdminArticleController {
 
     @Autowired
     DzdArticleService dzdArticleService;

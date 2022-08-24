@@ -16,6 +16,7 @@ import com.dizhongdi.serviceuser.service.UserAdminService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,8 +51,11 @@ public class UserAdminServiceImpl extends ServiceImpl<UcenterMemberMapper, Ucent
     public List<AdminGetUserVo> pageQueryList(Page<UcenterMember> userPage, UserQuery userQuery) {
         QueryWrapper<UcenterMember> wrapper = new QueryWrapper<>();
         List<AdminGetUserVo> list = new ArrayList<>();
+        String id = userQuery.getId();
         if (userQuery!=null){
-
+            if(!StringUtils.isEmpty(id)){
+                wrapper.eq("id",id);
+            }
         }
 
         IPage<UcenterMember> selectPage = baseMapper.selectPage(userPage, wrapper);

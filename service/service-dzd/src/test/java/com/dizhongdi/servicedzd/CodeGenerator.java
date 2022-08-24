@@ -57,7 +57,7 @@ public class CodeGenerator {
         // 4、包配置
         PackageConfig pc = new PackageConfig();
 //        pc.setModuleName("articleservice"); //模块名
-        pc.setParent("com.dizhongdi");
+        pc.setParent("com.dizhongdi.servicedzd");
 //        pc.setController("controller");
         pc.setEntity("entity");
         pc.setService("service");
@@ -66,7 +66,7 @@ public class CodeGenerator {
 
         // 5、策略配置
         StrategyConfig strategy = new StrategyConfig();
-        strategy.setInclude("dzd_subject");
+        strategy.setInclude("dzd_comment");
         strategy.setNaming(NamingStrategy.underline_to_camel);//数据库表映射到实体的命名策略
         strategy.setTablePrefix(pc.getModuleName() + "_"); //生成实体时去掉表前缀
 

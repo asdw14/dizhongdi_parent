@@ -13,13 +13,12 @@ import com.dizhongdi.rabbit.service.RabbitService;
 import com.dizhongdi.servicedzd.client.UserClient;
 import com.dizhongdi.servicedzd.entity.DzdArticle;
 import com.dizhongdi.servicedzd.entity.DzdArticleDescription;
-import com.dizhongdi.servicedzd.entity.vo.article.AticleQuery;
-import com.dizhongdi.servicedzd.entity.vo.article.CreateArticleVo;
-import com.dizhongdi.servicedzd.entity.vo.article.GetrAticleVo;
-import com.dizhongdi.servicedzd.entity.vo.article.GetrUserAticleVo;
+import com.dizhongdi.servicedzd.entity.DzdComment;
+import com.dizhongdi.servicedzd.entity.vo.article.*;
 import com.dizhongdi.servicedzd.mapper.DzdArticleMapper;
 import com.dizhongdi.servicedzd.service.DzdArticleDescriptionService;
 import com.dizhongdi.servicedzd.service.DzdArticleService;
+import com.dizhongdi.servicedzd.service.DzdCommentService;
 import com.dizhongdi.servicedzd.utils.MyCachedThread;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +45,10 @@ public class DzdArticleServiceImpl extends ServiceImpl<DzdArticleMapper, DzdArti
     //文章正文
     @Autowired
     DzdArticleDescriptionService descriptionService;
+
+    //评论
+    @Autowired
+    DzdCommentService commentService;
 
     @Autowired
     RabbitService rabbitService;
@@ -303,5 +306,77 @@ public class DzdArticleServiceImpl extends ServiceImpl<DzdArticleMapper, DzdArti
         //0改为1，1改为0
         return this.updateById(
                 article.setIsLock(article.getIsLock()==0 ? 1 : 0));
+    }
+
+    //前台使用的分页获取所有帖子
+    @Override
+    public List<GetAllAticleVo> pageAllArticleQuery(Page<DzdArticle> articlePage, AticleQuery articleQuery) {
+        QueryWrapper<DzdArticle> wrapper = new QueryWrapper<>();
+
+        List<GetAllAticleVo> articles = new ArrayList<>();
+
+        //按最新发布排序
+        wrapper.orderByDesc("gmt_modified");
+        System.out.println(articleQuery.getTitle());
+        if (!StringUtils.isEmpty(articleQuery.getTitle())){
+            wrapper.like("title",articleQuery.getTitle());
+        }
+        System.out.println(articleQuery.getBegin());
+
+
+        //是否有起始时间和终止时间同时存在
+        if (!(StringUtils.isEmpty(articleQuery.getBegin()) && StringUtils.isEmpty(articleQuery.getEnd()))){
+            //都有则做发布时间段
+            wrapper.between("gmt_modified",articleQuery.getBegin(),articleQuery.getEnd());
+
+            //小于终止日期
+        }else if (!StringUtils.isEmpty(articleQuery.getEnd())){
+            wrapper.le("gmt_modified",articleQuery.getEnd());
+
+            //大于开始日期
+        }else if (!StringUtils.isEmpty(articleQuery.getBegin())){
+            wrapper.ge("gmt_modified",articleQuery.getBegin());
+        }
+
+        //是否发布
+        if (!StringUtils.isEmpty(articleQuery.getStatus())){
+            wrapper.eq("status",articleQuery.getStatus());
+
+        }
+
+        //是否封禁
+        if (!StringUtils.isEmpty(articleQuery.getIsLock())){
+            wrapper.eq("is_lock",articleQuery.getIsLock());
+
+        }
+
+        //根据用户id或文章id搜索
+        if (!StringUtils.isEmpty(articleQuery.getId())){
+            wrapper.eq("id",articleQuery.getId()).or().eq("member_id",articleQuery.getId());
+
+        }
+
+        //文章类别
+        if (!StringUtils.isEmpty(articleQuery.getSubjectId())){
+            wrapper.eq("subject_id",articleQuery.getSubjectId());
+        }else if (!StringUtils.isEmpty(articleQuery.getSubjectParentId())){
+            wrapper.eq("subject_parent_id",articleQuery.getSubjectParentId());
+
+        }
+
+        //远程调用获取帖子发布用户头像和昵称
+        IPage<DzdArticle> selectPage = baseMapper.selectPage(articlePage, wrapper);
+        selectPage.getRecords().stream().map(article -> {
+            GetAllAticleVo AticleVo = new GetAllAticleVo();
+            AdminGetUserVo userinfo = userClient.getAllInfoId(article.getMemberId());
+            BeanUtils.copyProperties(article,AticleVo);
+            AticleVo.setAvatar(userinfo.getAvatar()).setNickname(userinfo.getNickname());
+            //获取评论总数
+            int commentCount = commentService.count(new QueryWrapper<DzdComment>().eq("article_id", article.getId()));
+            AticleVo.setCommentCount(commentCount);
+            return AticleVo;
+        }).forEach( userAticleVo -> articles.add(userAticleVo));
+
+        return articles;
     }
 }

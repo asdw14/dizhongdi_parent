@@ -4,10 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.dizhongdi.servicedzd.entity.DzdArticle;
-import com.dizhongdi.servicedzd.entity.vo.article.AticleQuery;
-import com.dizhongdi.servicedzd.entity.vo.article.CreateArticleVo;
-import com.dizhongdi.servicedzd.entity.vo.article.GetrAticleVo;
-import com.dizhongdi.servicedzd.entity.vo.article.GetrUserAticleVo;
+import com.dizhongdi.servicedzd.entity.vo.article.*;
 
 import java.util.List;
 import java.util.Map;
@@ -50,4 +47,7 @@ public interface DzdArticleService extends IService<DzdArticle> {
 
 //    修改帖子封禁状态
     boolean updateLock(String id);
+
+    //前台使用的分页获取所有帖子
+    List<GetAllAticleVo> pageAllArticleQuery(Page<DzdArticle> articlePage, AticleQuery articleQuery);
 }
