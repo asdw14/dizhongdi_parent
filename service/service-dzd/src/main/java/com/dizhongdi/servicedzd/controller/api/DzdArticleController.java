@@ -1,7 +1,6 @@
 package com.dizhongdi.servicedzd.controller.api;
 
 
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.dizhongdi.result.R;
 import com.dizhongdi.servicedzd.entity.DzdArticle;
@@ -14,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * <p>
@@ -79,12 +77,20 @@ public class DzdArticleController {
             @ApiParam(name = "limit", value = "每页记录数", required = true)
             @PathVariable Long limit,
 
-            @ApiParam(name = "AticleQuery", value = "查询对象", required = false)
-            @RequestBody AticleQuery articleQuery){
+            @ApiParam(name = "AticleQueryVo", value = "查询对象", required = false)
+            @RequestBody AticleQueryVo articleQuery){
 
         Page<DzdArticle> articlePage = new Page<>(page,limit);
         List<GetAllAticleVo> allAticleList = dzdArticleService.pageAllArticleQuery(articlePage,articleQuery);
         return R.ok().data("items" , allAticleList).data("total",articlePage.getTotal());
+    }
+
+    @ApiOperation(value = "前台获取帖子所有信息")
+    @PostMapping("getAticleInfo/{id}")
+    public R getAticleInfo(
+            @ApiParam(name = "id", value = "id", required = true) @PathVariable String id) {
+        ArticleInfoAllVo aticleInfo =  dzdArticleService.getAticleInfo(id);
+        return R.ok().data("item" , aticleInfo);
     }
 }
 

@@ -113,7 +113,7 @@ public class DzdArticleServiceImpl extends ServiceImpl<DzdArticleMapper, DzdArti
     }
 
     @Override
-    public Map<String, Object> pageList(Page<DzdArticle> pageParam, AticleQuery query) {
+    public Map<String, Object> pageList(Page<DzdArticle> pageParam, AticleQueryVo query) {
         QueryWrapper<DzdArticle> wrapper = new QueryWrapper<>();
         wrapper.orderByAsc("gmt_modified");
         if (query!=null){
@@ -161,7 +161,7 @@ public class DzdArticleServiceImpl extends ServiceImpl<DzdArticleMapper, DzdArti
 
     //分页获取管理员帖子
     @Override
-    public IPage<DzdArticle> pageQuery(Page<DzdArticle> articlePage, AticleQuery articleQuery) {
+    public IPage<DzdArticle> pageQuery(Page<DzdArticle> articlePage, AticleQueryVo articleQuery) {
         QueryWrapper<DzdArticle> wrapper = new QueryWrapper<>();
 
         //按最新发布排序
@@ -231,7 +231,7 @@ public class DzdArticleServiceImpl extends ServiceImpl<DzdArticleMapper, DzdArti
 
     //分页获取用户帖子
     @Override
-    public List<GetrUserAticleVo> pageUserQuery(Page<DzdArticle> articlePage, AticleQuery articleQuery) {
+    public List<GetrUserAticleVo> pageUserQuery(Page<DzdArticle> articlePage, AticleQueryVo articleQuery) {
         QueryWrapper<DzdArticle> wrapper = new QueryWrapper<>();
 
         List<GetrUserAticleVo> userAticleVos = new ArrayList<>();
@@ -310,7 +310,7 @@ public class DzdArticleServiceImpl extends ServiceImpl<DzdArticleMapper, DzdArti
 
     //前台使用的分页获取所有帖子
     @Override
-    public List<GetAllAticleVo> pageAllArticleQuery(Page<DzdArticle> articlePage, AticleQuery articleQuery) {
+    public List<GetAllAticleVo> pageAllArticleQuery(Page<DzdArticle> articlePage, AticleQueryVo articleQuery) {
         QueryWrapper<DzdArticle> wrapper = new QueryWrapper<>();
 
         List<GetAllAticleVo> articles = new ArrayList<>();
@@ -379,4 +379,30 @@ public class DzdArticleServiceImpl extends ServiceImpl<DzdArticleMapper, DzdArti
 
         return articles;
     }
+
+    //获取文章所有信息
+    @Override
+    public ArticleInfoAllVo getAticleInfo(String id) {
+        ArticleInfoAllVo articleInfo = new ArticleInfoAllVo();
+        //文章大多信息
+        DzdArticle article = this.getById(id);
+        BeanUtils.copyProperties(article,articleInfo);
+        //文章正文
+        DzdArticleDescription description = descriptionService.getById(id);
+        articleInfo.setDescription(description.getDescription());
+        //评论总数
+        Integer commentCount = commentService.getCount(id);
+        articleInfo.setCommentCount(commentCount);
+
+        //写文章的用户头像和昵称
+        AdminGetUserVo userInfo = userClient.getAllInfoId(article.getMemberId());
+        articleInfo.setAvatar(userInfo.getAvatar()).setNickname(userInfo.getNickname());
+
+        //默认获取前10条评论及其前两条子评论
+        List<CommentInfoVo> commentInfos = commentService.getCommentInfo(id,1L,10L);
+        articleInfo.setComments(commentInfos);
+        return articleInfo;
+    }
+
+
 }

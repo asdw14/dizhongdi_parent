@@ -28,13 +28,13 @@ public interface DzdArticleService extends IService<DzdArticle> {
 //    根据id删除帖子
     boolean deleteByid(String id);
 
-    Map<String, Object> pageList(Page<DzdArticle> pageParam, AticleQuery query);
+    Map<String, Object> pageList(Page<DzdArticle> pageParam, AticleQueryVo query);
 
     //修改帖子
     boolean updateArticle(CreateArticleVo articleVo);
 
     //分页条件查询
-    IPage<DzdArticle> pageQuery(Page<DzdArticle> articlePage, AticleQuery articleQuery);
+    IPage<DzdArticle> pageQuery(Page<DzdArticle> articlePage, AticleQueryVo articleQuery);
 
     //修改发布状态
     boolean updateStatus(String id);
@@ -43,11 +43,14 @@ public interface DzdArticleService extends IService<DzdArticle> {
     boolean updateInfo(String id, CreateArticleVo articleVo);
 
 //    分页获取用户帖子
-    List<GetrUserAticleVo> pageUserQuery(Page<DzdArticle> articlePage, AticleQuery articleQuery);
+    List<GetrUserAticleVo> pageUserQuery(Page<DzdArticle> articlePage, AticleQueryVo articleQuery);
 
 //    修改帖子封禁状态
     boolean updateLock(String id);
 
     //前台使用的分页获取所有帖子
-    List<GetAllAticleVo> pageAllArticleQuery(Page<DzdArticle> articlePage, AticleQuery articleQuery);
+    List<GetAllAticleVo> pageAllArticleQuery(Page<DzdArticle> articlePage, AticleQueryVo articleQuery);
+
+//    前台获取帖子所有信息
+    ArticleInfoAllVo getAticleInfo(String id);
 }
