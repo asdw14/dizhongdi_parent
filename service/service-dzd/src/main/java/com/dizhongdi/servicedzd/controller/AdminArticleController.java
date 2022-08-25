@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.dizhongdi.result.R;
 import com.dizhongdi.servicedzd.entity.DzdArticle;
-import com.dizhongdi.servicedzd.entity.vo.article.AticleQuery;
+import com.dizhongdi.servicedzd.entity.vo.article.AticleQueryVo;
 import com.dizhongdi.servicedzd.entity.vo.article.CreateArticleVo;
 import com.dizhongdi.servicedzd.entity.vo.article.GetrAticleVo;
 import com.dizhongdi.servicedzd.entity.vo.article.GetrUserAticleVo;
@@ -17,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * <p>
@@ -95,8 +94,8 @@ public class AdminArticleController {
             @ApiParam(name = "limit", value = "每页记录数", required = true)
             @PathVariable Long limit,
 
-            @ApiParam(name = "AticleQuery", value = "查询对象", required = false)
-            @RequestBody AticleQuery articleQuery){
+            @ApiParam(name = "AticleQueryVo", value = "查询对象", required = false)
+            @RequestBody AticleQueryVo articleQuery){
         Page<DzdArticle> articlePage = new Page<>(page,limit);
         IPage<DzdArticle> articleIPage = dzdArticleService.pageQuery(articlePage,articleQuery);
         return R.ok().data("items" , articleIPage.getRecords()).data("total",articleIPage.getTotal());
@@ -111,8 +110,8 @@ public class AdminArticleController {
             @ApiParam(name = "limit", value = "每页记录数", required = true)
             @PathVariable Long limit,
 
-            @ApiParam(name = "AticleQuery", value = "查询对象", required = false)
-            @RequestBody AticleQuery articleQuery){
+            @ApiParam(name = "AticleQueryVo", value = "查询对象", required = false)
+            @RequestBody AticleQueryVo articleQuery){
 
         Page<DzdArticle> articlePage = new Page<>(page,limit);
         List<GetrUserAticleVo> userAticleVo = dzdArticleService.pageUserQuery(articlePage,articleQuery);

@@ -7,7 +7,7 @@ import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
 /**
- * ClassName:AticleQuery
+ * ClassName:AticleQueryVo
  * Package:com.dizhongdi.servicedzd.entity.vo.article
  * Description:
  *
@@ -18,7 +18,7 @@ import lombok.experimental.Accessors;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @ApiModel(value="帖子查询", description="帖子查询条件vo")
-public class ApiAticleQuery {
+public class ApiAticleQueryVo {
 
     @ApiModelProperty(value = "帖子ID")
     private String id;
