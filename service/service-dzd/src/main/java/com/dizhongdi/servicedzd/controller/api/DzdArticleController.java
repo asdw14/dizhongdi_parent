@@ -86,8 +86,8 @@ public class DzdArticleController {
     }
 
     @ApiOperation(value = "前台获取帖子所有信息")
-    @PostMapping("getAticleInfo/{id}")
-    public R getAticleInfo(
+    @PostMapping("getArticleInfo/{id}")
+    public R getArticleInfo(
             @ApiParam(name = "id", value = "id", required = true) @PathVariable String id) {
         ArticleInfoAllVo aticleInfo =  dzdArticleService.getAticleInfo(id);
         return R.ok().data("item" , aticleInfo);

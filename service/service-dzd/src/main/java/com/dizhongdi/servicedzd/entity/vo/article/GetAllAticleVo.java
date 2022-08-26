@@ -21,7 +21,7 @@ import java.util.Date;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@ApiModel(value="帖子", description="单条帖子信息")
+@ApiModel(value="前台获取帖子列表时使用的vo", description="包括用户，评论点赞浏览数量")
 public class GetAllAticleVo {
 
     @ApiModelProperty(value = "帖子ID")

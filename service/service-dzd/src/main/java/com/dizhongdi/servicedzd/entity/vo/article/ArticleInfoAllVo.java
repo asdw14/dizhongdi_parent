@@ -1,7 +1,6 @@
 package com.dizhongdi.servicedzd.entity.vo.article;
 
-import com.baomidou.mybatisplus.annotation.FieldFill;
-import com.baomidou.mybatisplus.annotation.TableField;
+import com.dizhongdi.servicedzd.entity.vo.comment.CommentInfoVo;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;

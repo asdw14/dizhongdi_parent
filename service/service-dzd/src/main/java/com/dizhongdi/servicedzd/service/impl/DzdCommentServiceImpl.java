@@ -6,13 +6,15 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.dizhongdi.model.AdminGetUserVo;
 import com.dizhongdi.servicedzd.client.UserClient;
 import com.dizhongdi.servicedzd.entity.DzdComment;
-import com.dizhongdi.servicedzd.entity.vo.article.CommentInfoVo;
+import com.dizhongdi.servicedzd.entity.vo.comment.CommentInfoVo;
+import com.dizhongdi.servicedzd.entity.vo.comment.PushCommentVo;
 import com.dizhongdi.servicedzd.mapper.DzdCommentMapper;
 import com.dizhongdi.servicedzd.service.DzdCommentService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -110,4 +112,44 @@ public class DzdCommentServiceImpl extends ServiceImpl<DzdCommentMapper, DzdComm
         return childrenInfos;
 
     }
+
+
+    //发布评论
+    @Override
+    public boolean commentPush(PushCommentVo commentVo) {
+        String content = commentVo.getContent();
+        String parentId = commentVo.getParentId();
+        String articleId = commentVo.getArticleId();
+        String byMemberId = commentVo.getByMemberId();
+
+        DzdComment comment = new DzdComment();
+
+        //判断评论内容是否为空
+        if (StringUtils.isEmpty(content)){
+            return false;
+        }
+        comment.setContent(content);
+
+        //判断评论文章id是否为空
+        if (StringUtils.isEmpty(articleId)){
+            return false;
+        }
+        comment.setArticleId(articleId);
+
+        //判断上一级评论id是否为空
+        if (StringUtils.isEmpty(parentId)){
+            comment.setParentId(articleId);
+        }
+        comment.setParentId(parentId);
+
+        //判断对哪个用户评论是否为空
+        if (!StringUtils.isEmpty(byMemberId)){
+            comment.setMemberId(byMemberId);
+        }
+
+        //添加评论
+        return  this.save(comment);
+    }
+
+
 }

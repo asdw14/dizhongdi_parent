@@ -1,4 +1,4 @@
-package com.dizhongdi.servicedzd.entity.vo.article;
+package com.dizhongdi.servicedzd.entity.vo.comment;
 
 import com.baomidou.mybatisplus.annotation.*;
 import io.swagger.annotations.ApiModel;
@@ -22,7 +22,7 @@ import java.util.List;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@ApiModel(value="DzdComment对象", description="评论")
+@ApiModel(value="评论的所有信息", description="包括用户头像昵称回复人点赞")
 public class CommentInfoVo implements Serializable{
 
     private static final long serialVersionUID = 1L;

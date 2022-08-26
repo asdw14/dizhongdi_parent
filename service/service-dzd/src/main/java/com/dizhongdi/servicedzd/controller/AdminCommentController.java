@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
  * @since 2022-08-24
  */
 @RestController
-@RequestMapping("/dzd-comment")
-public class DzdCommentController {
+@RequestMapping("/admin/dzd/comment")
+public class AdminCommentController {
 
 }
 

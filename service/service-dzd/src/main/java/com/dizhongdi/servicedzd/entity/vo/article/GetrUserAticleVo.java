@@ -20,7 +20,7 @@ import java.util.Date;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@ApiModel(value="帖子", description="单条帖子信息")
+@ApiModel(value="帖子", description="单条帖子信息带用户信息")
 public class GetrUserAticleVo {
 
     @ApiModelProperty(value = "帖子ID")

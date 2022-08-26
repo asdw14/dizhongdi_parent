@@ -2,7 +2,8 @@ package com.dizhongdi.servicedzd.service;
 
 import com.dizhongdi.servicedzd.entity.DzdComment;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.dizhongdi.servicedzd.entity.vo.article.CommentInfoVo;
+import com.dizhongdi.servicedzd.entity.vo.comment.CommentInfoVo;
+import com.dizhongdi.servicedzd.entity.vo.comment.PushCommentVo;
 
 import java.util.List;
 
@@ -21,4 +22,8 @@ public interface DzdCommentService extends IService<DzdComment> {
 
     //分页获取评论所有信息，包括前两条子评论
     List<CommentInfoVo> getCommentInfo(String id, Long current, Long size);
+
+    //发布评论
+    boolean commentPush(PushCommentVo comment);
+
 }
