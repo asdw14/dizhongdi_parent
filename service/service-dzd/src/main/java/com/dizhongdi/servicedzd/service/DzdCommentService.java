@@ -28,4 +28,12 @@ public interface DzdCommentService extends IService<DzdComment> {
 
     //根据帖子id获取评论
     List<CommentInfoVo> getCommentByArticleId(String id);
+
+
+    //对帖子点赞，一用户一次
+    boolean commentStar(String commentId, String memberId);
+
+    //撤销对帖子点赞
+    boolean rollbackStar(String commentId, String memberId);
 }
+

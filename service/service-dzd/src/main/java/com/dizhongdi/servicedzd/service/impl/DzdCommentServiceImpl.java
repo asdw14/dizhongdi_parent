@@ -5,10 +5,12 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.dizhongdi.model.AdminGetUserVo;
 import com.dizhongdi.servicedzd.client.UserClient;
+import com.dizhongdi.servicedzd.entity.DzdArticle;
 import com.dizhongdi.servicedzd.entity.DzdComment;
 import com.dizhongdi.servicedzd.entity.vo.comment.CommentInfoVo;
 import com.dizhongdi.servicedzd.entity.vo.comment.PushCommentVo;
 import com.dizhongdi.servicedzd.mapper.DzdCommentMapper;
+import com.dizhongdi.servicedzd.service.CommentStarService;
 import com.dizhongdi.servicedzd.service.DzdCommentService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.BeanUtils;
@@ -31,6 +33,9 @@ import java.util.List;
 public class DzdCommentServiceImpl extends ServiceImpl<DzdCommentMapper, DzdComment> implements DzdCommentService {
     @Autowired
     UserClient userClient;
+
+    @Autowired
+    CommentStarService commentStarService;
 
     //获取评论总数
     @Override
@@ -164,5 +169,44 @@ public class DzdCommentServiceImpl extends ServiceImpl<DzdCommentMapper, DzdComm
         return this.getCommentInfo(id,1L,20L);
     }
 
+
+    //对帖子点赞，一用户一次
+    @Override
+    public boolean commentStar(String commentId, String memberId) {
+        boolean flag = commentStarService.isStarByCommentAndMemberId(commentId, memberId);
+        //没有点赞记录
+        if (flag){
+            //异步执行添加点赞记录，因为此数据不重要
+//            threadPool.execute(() ->{
+            DzdComment comment = this.getById(commentId);
+            if (comment!=null){
+                //加点赞记录
+                commentStarService.addStarLog(commentId,memberId);
+                //对帖子表加 1点赞量
+                comment.setPraiseCount(comment.getPraiseCount()+1);
+                this.updateById(comment);
+            }
+//            });
+            return true;
+        }
+        return false;
+    }
+
+    //撤销对帖子点赞
+    public boolean rollbackStar(String commentId, String memberId){
+        boolean flag = commentStarService.isStarByCommentAndMemberId(commentId, memberId);
+        if (!flag){
+            //异步执行添加点赞记录，因为此数据不重要
+//            threadPool.execute(() -> {
+            DzdComment comment = baseMapper.selectById(commentId);
+            //删除点赞记录
+            commentStarService.deleteStarLog(commentId, memberId);
+            //减少点赞数量
+            this.updateById(comment.setPraiseCount(comment.getPraiseCount() - 1));
+//            });
+            return true;
+        }
+        return true;
+    }
 
 }
