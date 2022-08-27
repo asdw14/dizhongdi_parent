@@ -5,13 +5,17 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.dizhongdi.result.R;
 import com.dizhongdi.servicedzd.entity.DzdArticle;
 import com.dizhongdi.servicedzd.entity.vo.article.*;
+import com.dizhongdi.servicedzd.entity.vo.comment.PushCommentVo;
 import com.dizhongdi.servicedzd.service.DzdArticleService;
+import com.dizhongdi.utils.JwtUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
@@ -91,6 +95,42 @@ public class DzdArticleController {
             @ApiParam(name = "id", value = "id", required = true) @PathVariable String id) {
         ArticleInfoAllVo aticleInfo =  dzdArticleService.getAticleInfo(id);
         return R.ok().data("item" , aticleInfo);
+    }
+
+    @GetMapping("articleStar/{articleId}/{memberId}")
+    @ApiOperation(value = "点赞")
+    public R articleStar( @PathVariable String articleId ,@PathVariable String memberId , HttpServletRequest request){
+
+        //验证用户是否登录
+//        String memberId = JwtUtils.getMemberIdByJwtToken(request);
+        System.out.println(memberId);
+        if (StringUtils.isEmpty(memberId)){
+            return R.error().message("请先登录后在进行点赞！");
+        }
+
+        //调用方法点赞
+        if (dzdArticleService.articleStar(articleId,memberId)){
+            return R.ok().message("点赞成功");
+        }
+        return R.error().message("点赞失败");
+    }
+
+    @GetMapping("rollbackStar/{articleId}/{memberId}")
+    @ApiOperation(value = "撤回点赞")
+    public R rollbackStar( @PathVariable String articleId ,@PathVariable String memberId , HttpServletRequest request){
+
+        //验证用户是否登录
+//        String memberId = JwtUtils.getMemberIdByJwtToken(request);
+        System.out.println(memberId);
+        if (StringUtils.isEmpty(memberId)){
+            return R.error().message("请先登录后在进行点赞！");
+        }
+
+        //调用方法点赞
+        if (dzdArticleService.rollbackStar(articleId,memberId)){
+            return R.ok();
+        }
+        return R.error();
     }
 }
 

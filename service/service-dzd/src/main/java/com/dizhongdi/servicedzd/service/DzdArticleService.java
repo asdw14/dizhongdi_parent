@@ -53,4 +53,10 @@ public interface DzdArticleService extends IService<DzdArticle> {
 
 //    前台获取帖子所有信息
     ArticleInfoAllVo getAticleInfo(String id);
+
+    //对帖子点赞，一用户一次
+    boolean articleStar(String articleId, String memberId);
+
+    //撤销对帖子点赞
+    boolean rollbackStar(String articleId, String memberId);
 }

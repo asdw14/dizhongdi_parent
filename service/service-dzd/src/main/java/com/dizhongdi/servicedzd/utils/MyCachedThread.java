@@ -16,9 +16,11 @@ public class MyCachedThread {
                 1,
                 //根据cpu核心数分配线程数
                 Runtime.getRuntime().availableProcessors()+1,
+                //超时时间
                 2L,
                 TimeUnit.SECONDS,
-                new LinkedBlockingDeque<>(Runtime.getRuntime().availableProcessors()),
+                //等待队列
+                new LinkedBlockingDeque<>(1000),
                 Executors.defaultThreadFactory(),
                 new ThreadPoolExecutor.DiscardOldestPolicy()
         );

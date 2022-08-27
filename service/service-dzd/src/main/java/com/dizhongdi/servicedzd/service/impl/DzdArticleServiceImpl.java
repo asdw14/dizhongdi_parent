@@ -17,6 +17,7 @@ import com.dizhongdi.servicedzd.entity.DzdComment;
 import com.dizhongdi.servicedzd.entity.vo.article.*;
 import com.dizhongdi.servicedzd.entity.vo.comment.CommentInfoVo;
 import com.dizhongdi.servicedzd.mapper.DzdArticleMapper;
+import com.dizhongdi.servicedzd.service.ArticleStarService;
 import com.dizhongdi.servicedzd.service.DzdArticleDescriptionService;
 import com.dizhongdi.servicedzd.service.DzdArticleService;
 import com.dizhongdi.servicedzd.service.DzdCommentService;
@@ -50,6 +51,10 @@ public class DzdArticleServiceImpl extends ServiceImpl<DzdArticleMapper, DzdArti
     //评论
     @Autowired
     DzdCommentService commentService;
+
+    //帖子点赞记录
+    @Autowired
+    ArticleStarService articleStarService;
 
     @Autowired
     RabbitService rabbitService;
@@ -404,6 +409,42 @@ public class DzdArticleServiceImpl extends ServiceImpl<DzdArticleMapper, DzdArti
         List<CommentInfoVo> commentInfos = commentService.getCommentInfo(id,1L,10L);
         articleInfo.setComments(commentInfos);
         return articleInfo;
+    }
+
+    //对帖子点赞，一用户一次
+    @Override
+    public boolean articleStar(String articleId, String memberId) {
+        boolean flag = articleStarService.isStarByArticleAndMemberId(articleId, memberId);
+        if (flag){
+            //异步执行添加点赞记录，因为此数据不重要
+//            threadPool.execute(() ->{
+                DzdArticle article = this.getById(articleId);
+                //加点赞记录
+                articleStarService.addStarLog(articleId,memberId);
+                //对帖子表加 1点赞量
+                article.setPraiseCount(article.getPraiseCount()+1);
+                this.updateById(article);
+//            });
+            return true;
+        }
+        return true;
+    }
+
+    //撤销对帖子点赞
+    public boolean rollbackStar(String articleId, String memberId){
+        boolean flag = articleStarService.isStarByArticleAndMemberId(articleId, memberId);
+        if (!flag){
+            //异步执行添加点赞记录，因为此数据不重要
+//            threadPool.execute(() -> {
+                DzdArticle article = baseMapper.selectById(articleId);
+                //删除点赞记录
+                articleStarService.deleteStarLog(articleId, memberId);
+                //减少点赞数量
+                this.updateById(article.setPraiseCount(article.getPraiseCount() - 1));
+//            });
+            return true;
+        }
+        return true;
     }
 
 
