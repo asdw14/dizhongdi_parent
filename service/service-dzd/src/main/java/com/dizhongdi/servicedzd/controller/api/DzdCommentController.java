@@ -1,6 +1,7 @@
 package com.dizhongdi.servicedzd.controller.api;
 
 import com.dizhongdi.result.R;
+import com.dizhongdi.servicedzd.entity.vo.comment.CommentInfoVo;
 import com.dizhongdi.servicedzd.entity.vo.comment.PushCommentVo;
 import com.dizhongdi.servicedzd.service.DzdCommentService;
 import com.dizhongdi.utils.JwtUtils;
@@ -9,12 +10,10 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
  * ClassName:DzdCommentController
@@ -49,9 +48,16 @@ public class DzdCommentController {
 
         //调用评论
         if (commentService.commentPush(commentVo)){
-            return R.ok();
+            return R.ok().message("回复成功！");
         }
         return R.error().message("评论失败");
     }
 
+    //根据帖子id获取评论
+    @GetMapping("getCommentByArticleId/{id}")
+    @ApiOperation(value = "根据帖子id获取评论")
+    public R getCommentByArticleId(@PathVariable String id) {
+        List<CommentInfoVo> comments = commentService.getCommentByArticleId(id);
+        return R.ok().data("items",comments);
+    }
 }

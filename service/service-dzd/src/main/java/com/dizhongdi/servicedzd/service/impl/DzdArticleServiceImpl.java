@@ -293,7 +293,8 @@ public class DzdArticleServiceImpl extends ServiceImpl<DzdArticleMapper, DzdArti
             GetrUserAticleVo userAticleVo = new GetrUserAticleVo();
             AdminGetUserVo userinfo = userClient.getAllInfoId(article.getMemberId());
             BeanUtils.copyProperties(article,userAticleVo);
-            userAticleVo.setAvatar(userinfo.getAvatar()).setNickname(userinfo.getNickname());
+            if (userinfo!=null)
+                userAticleVo.setAvatar(userinfo.getAvatar()).setNickname(userinfo.getNickname());
             return userAticleVo;
         }).forEach( userAticleVo -> userAticleVos.add(userAticleVo));
 

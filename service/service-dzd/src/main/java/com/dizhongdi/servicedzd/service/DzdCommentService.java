@@ -26,4 +26,6 @@ public interface DzdCommentService extends IService<DzdComment> {
     //发布评论
     boolean commentPush(PushCommentVo comment);
 
+    //根据帖子id获取评论
+    List<CommentInfoVo> getCommentByArticleId(String id);
 }

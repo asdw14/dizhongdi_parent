@@ -46,7 +46,7 @@ public class DzdCommentServiceImpl extends ServiceImpl<DzdCommentMapper, DzdComm
         Page<DzdComment> page = new Page<>(current,size);
         IPage<DzdComment> selectPage = baseMapper.selectPage(page,
                 new QueryWrapper<DzdComment>().eq("article_id", id).
-                        and(wrapper -> wrapper.eq("parent_id", id)));
+                        and(wrapper -> wrapper.eq("parent_id", id)).orderByDesc("gmt_create"));
 
         List<DzdComment> comments = selectPage.getRecords();
 
@@ -121,6 +121,7 @@ public class DzdCommentServiceImpl extends ServiceImpl<DzdCommentMapper, DzdComm
         String parentId = commentVo.getParentId();
         String articleId = commentVo.getArticleId();
         String byMemberId = commentVo.getByMemberId();
+        String memberId = commentVo.getMemberId();
 
         DzdComment comment = new DzdComment();
 
@@ -136,6 +137,12 @@ public class DzdCommentServiceImpl extends ServiceImpl<DzdCommentMapper, DzdComm
         }
         comment.setArticleId(articleId);
 
+        //判断写评论的用户id是否为空
+        if (StringUtils.isEmpty(memberId)){
+            return false;
+        }
+        comment.setMemberId(memberId);
+
         //判断上一级评论id是否为空
         if (StringUtils.isEmpty(parentId)){
             comment.setParentId(articleId);
@@ -149,6 +156,12 @@ public class DzdCommentServiceImpl extends ServiceImpl<DzdCommentMapper, DzdComm
 
         //添加评论
         return  this.save(comment);
+    }
+
+    //根据帖子id获取评论
+    @Override
+    public List<CommentInfoVo> getCommentByArticleId(String id) {
+        return this.getCommentInfo(id,1L,20L);
     }
 
 
