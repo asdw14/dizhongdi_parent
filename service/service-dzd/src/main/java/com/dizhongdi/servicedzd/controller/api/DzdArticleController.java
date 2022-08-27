@@ -97,12 +97,12 @@ public class DzdArticleController {
         return R.ok().data("item" , aticleInfo);
     }
 
-    @GetMapping("articleStar/{articleId}/{memberId}")
+    @GetMapping("articleStar/{articleId}")
     @ApiOperation(value = "点赞")
-    public R articleStar( @PathVariable String articleId ,@PathVariable String memberId , HttpServletRequest request){
+    public R articleStar( @PathVariable String articleId , HttpServletRequest request){
 
         //验证用户是否登录
-//        String memberId = JwtUtils.getMemberIdByJwtToken(request);
+        String memberId = JwtUtils.getMemberIdByJwtToken(request);
         System.out.println(memberId);
         if (StringUtils.isEmpty(memberId)){
             return R.error().message("请先登录后在进行点赞！");
@@ -115,12 +115,12 @@ public class DzdArticleController {
         return R.error().message("点赞失败");
     }
 
-    @GetMapping("rollbackStar/{articleId}/{memberId}")
+    @GetMapping("rollbackStar/{articleId}")
     @ApiOperation(value = "撤回点赞")
-    public R rollbackStar( @PathVariable String articleId ,@PathVariable String memberId , HttpServletRequest request){
+    public R rollbackStar( @PathVariable String articleId , HttpServletRequest request){
 
         //验证用户是否登录
-//        String memberId = JwtUtils.getMemberIdByJwtToken(request);
+        String memberId = JwtUtils.getMemberIdByJwtToken(request);
         System.out.println(memberId);
         if (StringUtils.isEmpty(memberId)){
             return R.error().message("请先登录后在进行点赞！");

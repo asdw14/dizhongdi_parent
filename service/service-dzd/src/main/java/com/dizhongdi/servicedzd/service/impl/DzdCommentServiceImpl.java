@@ -209,4 +209,11 @@ public class DzdCommentServiceImpl extends ServiceImpl<DzdCommentMapper, DzdComm
         return true;
     }
 
+
+    //删除评论
+    @Override
+    public boolean deleteComment(String id) {
+        return this.removeById(id);
+    }
+
 }

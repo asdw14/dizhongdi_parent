@@ -35,5 +35,8 @@ public interface DzdCommentService extends IService<DzdComment> {
 
     //撤销对帖子点赞
     boolean rollbackStar(String commentId, String memberId);
+
+    //删除评论
+    boolean deleteComment(String id);
 }
 

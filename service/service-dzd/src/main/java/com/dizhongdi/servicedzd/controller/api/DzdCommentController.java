@@ -1,6 +1,7 @@
 package com.dizhongdi.servicedzd.controller.api;
 
 import com.dizhongdi.result.R;
+import com.dizhongdi.servicedzd.entity.DzdComment;
 import com.dizhongdi.servicedzd.entity.vo.comment.CommentInfoVo;
 import com.dizhongdi.servicedzd.entity.vo.comment.PushCommentVo;
 import com.dizhongdi.servicedzd.service.CommentStarService;
@@ -55,6 +56,27 @@ public class DzdCommentController {
             return R.ok().message("回复成功！");
         }
         return R.error().message("评论失败");
+    }
+
+    @GetMapping("/deleteComment/{id}")
+    @ApiOperation(value = "根据评论id和发起请求的用户id判断删除评论")
+    public R deleteComment(@ApiParam(name = "id", value = "帖子id", required = true)
+                         @PathVariable String id, HttpServletRequest request){
+
+        //验证用户是否登录
+        String memberId = JwtUtils.getMemberIdByJwtToken(request);
+        System.out.println(memberId);
+        DzdComment comment = commentService.getById(id);
+        if (comment==null){
+            return R.error().message("评论已删除");
+        }
+        //判断发起请求人和评论发起用户是否为同一人
+        if (comment.getMemberId().equals(memberId)){
+            commentService.deleteComment(id);
+            return R.ok();
+        }else {
+            return R.error().message("删除失败，只能删除自己发布的评论！");
+        }
     }
 
     //根据帖子id获取评论
