@@ -11,16 +11,14 @@ import com.dizhongdi.model.EsArticleVo;
 import com.dizhongdi.rabbit.config.MqConst;
 import com.dizhongdi.rabbit.service.RabbitService;
 import com.dizhongdi.servicedzd.client.UserClient;
+import com.dizhongdi.servicedzd.entity.ArticleViewLog;
 import com.dizhongdi.servicedzd.entity.DzdArticle;
 import com.dizhongdi.servicedzd.entity.DzdArticleDescription;
 import com.dizhongdi.servicedzd.entity.DzdComment;
 import com.dizhongdi.servicedzd.entity.vo.article.*;
 import com.dizhongdi.servicedzd.entity.vo.comment.CommentInfoVo;
 import com.dizhongdi.servicedzd.mapper.DzdArticleMapper;
-import com.dizhongdi.servicedzd.service.ArticleStarService;
-import com.dizhongdi.servicedzd.service.DzdArticleDescriptionService;
-import com.dizhongdi.servicedzd.service.DzdArticleService;
-import com.dizhongdi.servicedzd.service.DzdCommentService;
+import com.dizhongdi.servicedzd.service.*;
 import com.dizhongdi.servicedzd.utils.MyCachedThread;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,6 +53,9 @@ public class DzdArticleServiceImpl extends ServiceImpl<DzdArticleMapper, DzdArti
     //帖子点赞记录
     @Autowired
     ArticleStarService articleStarService;
+
+    @Autowired
+    ArticleViewLogService articleViewLogService;
 
     @Autowired
     RabbitService rabbitService;
@@ -445,6 +446,25 @@ public class DzdArticleServiceImpl extends ServiceImpl<DzdArticleMapper, DzdArti
             return true;
         }
         return true;
+    }
+
+    //根据用户id增加浏览次数，一个用户增加一次    因为数据不重要就不返回错误及信息了
+    @Override
+    public void addArticleViewCountByMemberId(String articleId, String memberId) {
+        //判断该用户是否已增加浏览次数 true：未增加 false：已增加
+        boolean flag = articleViewLogService.isAddByMemberId(articleId,memberId);
+        if (flag){
+            DzdArticle article = baseMapper.selectById(articleId);
+            if (article!=null){
+                //记录表增加一条记录 ；浏览次数加一
+                ArticleViewLog articleViewLog = new ArticleViewLog().setArticleId(articleId).setMemberId(memberId);
+                //增加记录
+                articleViewLogService.save(articleViewLog);
+                //文章表浏览记录+1
+                article.setViewCount(article.getViewCount()+1);
+                baseMapper.updateById(article);
+            }
+        }
     }
 
 

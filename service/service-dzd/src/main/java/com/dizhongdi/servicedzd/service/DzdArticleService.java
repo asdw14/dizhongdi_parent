@@ -59,4 +59,7 @@ public interface DzdArticleService extends IService<DzdArticle> {
 
     //撤销对帖子点赞
     boolean rollbackStar(String articleId, String memberId);
+
+    //根据用户id增加浏览次数，一个用户增加一次
+    void addArticleViewCountByMemberId(String articleId, String memberId);
 }

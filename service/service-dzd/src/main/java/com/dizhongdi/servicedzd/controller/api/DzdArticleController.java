@@ -3,6 +3,7 @@ package com.dizhongdi.servicedzd.controller.api;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.dizhongdi.result.R;
+import com.dizhongdi.servicebase.utils.IpUtils;
 import com.dizhongdi.servicedzd.entity.DzdArticle;
 import com.dizhongdi.servicedzd.entity.vo.article.*;
 import com.dizhongdi.servicedzd.entity.vo.comment.PushCommentVo;
@@ -48,6 +49,7 @@ public class DzdArticleController {
     @ApiOperation(value = "根据id获取帖子")
     @GetMapping("/{id}")
     public R getById(@PathVariable String id){
+        //获取帖子信息
         GetrAticleVo getrAticleVo = dzdArticleService.queryById(id);
         return R.ok().data("item",getrAticleVo);
     }
@@ -92,8 +94,14 @@ public class DzdArticleController {
     @ApiOperation(value = "前台获取帖子所有信息")
     @PostMapping("getArticleInfo/{id}")
     public R getArticleInfo(
-            @ApiParam(name = "id", value = "id", required = true) @PathVariable String id) {
+            @ApiParam(name = "id", value = "id", required = true) @PathVariable String id, HttpServletRequest request) {
         ArticleInfoAllVo aticleInfo =  dzdArticleService.getAticleInfo(id);
+        String ipAddr = IpUtils.getIpAddress(request);
+        System.out.println("===================================================="+ipAddr);
+        //验证用户是否登录
+        String memberId = JwtUtils.getMemberIdByJwtToken(request);
+        //根据用户id增加浏览次数，一个用户增加一次
+        dzdArticleService.addArticleViewCountByMemberId(id,memberId);
         return R.ok().data("item" , aticleInfo);
     }
 
