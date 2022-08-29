@@ -5,6 +5,8 @@ import com.dizhongdi.serviceoss.entity.DzdSource;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.dizhongdi.serviceoss.entity.vo.SourceInfoVo;
 import com.dizhongdi.serviceoss.entity.vo.SourceQuery;
+import com.dizhongdi.serviceoss.entity.vo.UploadInfo;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -32,4 +34,7 @@ public interface DzdSourceService extends IService<DzdSource> {
 
     //根据id删除资源,包括oss上保存的文件
     boolean deleteByid(String id);
+
+    //上传资源文件
+    boolean uploadSource(MultipartFile file, UploadInfo uploadInfo);
 }

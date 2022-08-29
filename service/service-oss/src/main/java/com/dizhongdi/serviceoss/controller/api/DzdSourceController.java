@@ -8,6 +8,7 @@ import com.dizhongdi.serviceoss.entity.vo.SourceInfoVo;
 import com.dizhongdi.serviceoss.entity.vo.SourceQuery;
 import com.dizhongdi.serviceoss.entity.vo.UploadInfo;
 import com.dizhongdi.serviceoss.service.DzdSourceService;
+import com.dizhongdi.utils.JwtUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -73,11 +74,18 @@ public class DzdSourceController {
         }
 
         UploadInfo uploadInfo = new UploadInfo();
+        //验证用户是否登录
+        String userId = JwtUtils.getMemberIdByJwtToken(request);
+        if (StringUtils.isEmpty(userId)){
+            uploadInfo.setUserId(userId);
+        }
+
         //用户给的名,没给就默认原始文件名
         if (!StringUtils.isEmpty(sourceName)) {
             uploadInfo.setSourceName(sourceName);
         }
         uploadInfo.setSourceName(file.getOriginalFilename());
+
         //价格，为空默认为0
         if (!StringUtils.isEmpty(price)) {
             uploadInfo.setPrice(price);
@@ -88,12 +96,13 @@ public class DzdSourceController {
         if (!StringUtils.isEmpty(isPublic)) {
             uploadInfo.setIsPublic(isPublic);
         }
+
         //上层文件夹id，默认为0
         if (!StringUtils.isEmpty(parentId)) {
             uploadInfo.setParentId(parentId);
         }
         uploadInfo.setParentId("0");
-
+        //调用service方法上传
         boolean b = sourceService.uploadSource(file, uploadInfo);
         if (b) {
             return R.ok();

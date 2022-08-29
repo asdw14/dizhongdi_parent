@@ -115,7 +115,7 @@ public class WxApiController {
             //CookieUtils.setCookie(request, response, "guli_jwt_token", token);
 
             //因为端口号不同存在蛞蝓问题，cookie不能跨域，所以这里使用url重写
-            return "redirect:http://localhost:3000?token=" + token;
+            return "redirect:http://192.168.169.1:3000?token=" + token;
         }
         String token = JwtUtils.getJwtToken(member.getId(),member.getNickname());
 
@@ -123,7 +123,7 @@ public class WxApiController {
         //CookieUtils.setCookie(request, response, "guli_jwt_token", token);
 
         //因为端口号不同存在蛞蝓问题，cookie不能跨域，所以这里使用url重写
-        return "redirect:http://localhost:3000?token=" + token;
+        return "redirect:http://192.168.169.1:3000?token=" + token;
     }
     @GetMapping("login")
     public String genQrConnect(HttpSession session) {
