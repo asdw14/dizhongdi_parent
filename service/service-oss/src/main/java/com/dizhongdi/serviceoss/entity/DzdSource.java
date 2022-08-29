@@ -46,6 +46,12 @@ public class DzdSource implements Serializable {
     @ApiModelProperty(value = "文件大小：MB")
     private BigDecimal fileSize;
 
+    @ApiModelProperty(value = "md5值")
+    private String md5;
+
+    @ApiModelProperty(value = "是否为文件夹")
+    private Integer isDirectory;
+
     @ApiModelProperty(value = "OSS云端保存资源URL")
     private String sourceOssUrl;
 
@@ -53,7 +59,7 @@ public class DzdSource implements Serializable {
     private String originalName;
 
     @ApiModelProperty(value = "资源价格，设置为0则可免费下载")
-    private BigDecimal price;
+    private Integer price;
 
     @ApiModelProperty(value = "销售数量")
     private Long buyCount;
@@ -66,9 +72,6 @@ public class DzdSource implements Serializable {
 
     @ApiModelProperty(value = "是否封禁 ：0未封，1封禁")
     private Integer isBan;
-
-    @ApiModelProperty(value = "是否收费 ：0免费，1收费")
-    private Integer isCharge;
 
     @ApiModelProperty(value = "逻辑删除 1（true）已删除， 0（false）未删除")
     @TableLogic

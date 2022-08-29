@@ -40,6 +40,7 @@ public class SourceQuery implements Serializable {
 
     @ApiModelProperty(value = "最小文件大小：MB")
     private BigDecimal minfileSize;
+
     @ApiModelProperty(value = "最大文件大小：MB")
     private BigDecimal maxfileSize;
 
@@ -48,7 +49,7 @@ public class SourceQuery implements Serializable {
     private String originalName;
 
     @ApiModelProperty(value = "资源价格，设置为0则可免费下载")
-    private BigDecimal price;
+    private Integer price;
 
     @ApiModelProperty(value = "销售数量")
     private Long buyCount;
