@@ -3,6 +3,7 @@ package com.dizhongdi.serviceoss.service;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.dizhongdi.serviceoss.entity.DzdSource;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.dizhongdi.serviceoss.entity.vo.DirectoryVo;
 import com.dizhongdi.serviceoss.entity.vo.SourceInfoVo;
 import com.dizhongdi.serviceoss.entity.vo.SourceQuery;
 import com.dizhongdi.serviceoss.entity.vo.UploadInfo;
@@ -37,4 +38,8 @@ public interface DzdSourceService extends IService<DzdSource> {
 
     //上传资源文件
     boolean uploadSource(MultipartFile file, UploadInfo uploadInfo);
+
+    //新建文件夹
+    boolean newDirectory(DirectoryVo directoryVo);
+
 }

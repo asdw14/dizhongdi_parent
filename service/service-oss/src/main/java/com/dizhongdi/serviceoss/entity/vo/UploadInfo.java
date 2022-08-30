@@ -43,9 +43,6 @@ public class UploadInfo {
     @ApiModelProperty(value = "是否为文件夹")
     private Integer isDirectory;
 
-    @ApiModelProperty(value = "OSS云端保存资源URL")
-    private String sourceOssUrl;
-
     @ApiModelProperty(value = "原始文件名称")
     private String originalName;
 

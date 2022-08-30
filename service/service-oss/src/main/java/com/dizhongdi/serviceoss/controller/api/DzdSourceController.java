@@ -4,6 +4,7 @@ package com.dizhongdi.serviceoss.controller.api;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.dizhongdi.result.R;
 import com.dizhongdi.serviceoss.entity.DzdSource;
+import com.dizhongdi.serviceoss.entity.vo.DirectoryVo;
 import com.dizhongdi.serviceoss.entity.vo.SourceInfoVo;
 import com.dizhongdi.serviceoss.entity.vo.SourceQuery;
 import com.dizhongdi.serviceoss.entity.vo.UploadInfo;
@@ -109,6 +110,37 @@ public class DzdSourceController {
         }
         return R.error().message("上传文件失败");
 
+    }
+
+
+    @ApiOperation(value = "新建文件夹")
+    @PostMapping("newDirectory")
+    public R newDirectory(@ApiParam(name = "directoryVo", value = "文件夹信息", required = true)
+                        @RequestBody DirectoryVo directoryVo, HttpServletRequest request){
+
+        //验证用户是否登录
+        String userId = JwtUtils.getMemberIdByJwtToken(request);
+        if (StringUtils.isEmpty(userId)){
+            directoryVo.setUserId(userId);
+        }
+
+        //文件夹名不能为空
+        if (StringUtils.isEmpty(directoryVo.getSourceName())){
+            return R.error().message("文件夹名不能为空！");
+        }
+
+        //父层级
+        String parentId = directoryVo.getParentId();
+        if (StringUtils.isEmpty(parentId)){
+            directoryVo.setParentId("0");
+        }
+
+        directoryVo.setIsDirectory(1);
+        if (sourceService.newDirectory(directoryVo)){
+            return R.ok();
+
+        }
+        return R.error().message("新建文件夹失败");
     }
 }
 

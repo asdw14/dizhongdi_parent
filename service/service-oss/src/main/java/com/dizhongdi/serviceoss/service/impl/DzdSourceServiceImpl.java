@@ -9,6 +9,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.dizhongdi.model.AdminGetUserVo;
 import com.dizhongdi.serviceoss.client.UserClient;
 import com.dizhongdi.serviceoss.entity.DzdSource;
+import com.dizhongdi.serviceoss.entity.vo.DirectoryVo;
 import com.dizhongdi.serviceoss.entity.vo.SourceInfoVo;
 import com.dizhongdi.serviceoss.entity.vo.SourceQuery;
 import com.dizhongdi.serviceoss.entity.vo.UploadInfo;
@@ -20,6 +21,7 @@ import org.joda.time.DateTime;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 import org.springframework.util.StringUtils;
@@ -171,18 +173,20 @@ public class DzdSourceServiceImpl extends ServiceImpl<DzdSourceMapper, DzdSource
         // 创建OSSClient实例。
         OSS ossClient = new OSSClientBuilder().build("https://"+endpoint, accessKeyId, accessKeySecret);
         try {
-
+            DzdSource dzdSource = new DzdSource();
+            BeanUtils.copyProperties(uploadInfo,dzdSource);
+            //获取上传文件流
             InputStream inputStream = file.getInputStream();
             //获取文件md5值
             String md5 = DigestUtils.md5DigestAsHex(inputStream);
-            uploadInfo.setMd5(md5);
+            dzdSource.setMd5(md5);
             //原始文件名
             String originalFilename = file.getOriginalFilename();
-            uploadInfo.setOriginalName(originalFilename);
+            dzdSource.setOriginalName(originalFilename);
             //大小 byte
             double fileSize = file.getBytes().length;
             //把byte转为MB单位
-            uploadInfo.setFileSize(new BigDecimal((fileSize/1024/1024)));
+            dzdSource.setFileSize(new BigDecimal((fileSize/1024/1024)));
 
             //构建日期路径：avatar/2019/02/26/文件名
             String datePath = new DateTime().toString("yyyy/MM/dd");
@@ -196,11 +200,14 @@ public class DzdSourceServiceImpl extends ServiceImpl<DzdSourceMapper, DzdSource
 
             filepath = datePath + "/" + uploadInfo.getSourceName();
             //文件上传至阿里云
-            ossClient.putObject(bucketName,filepath,inputStream);
+            ossClient.putObject(bucketName,filepath,file.getInputStream());
             //获取url地址
             uploadUrl = "https://" + bucketName + "." + endpoint + "/" + filepath;
             System.out.println(uploadUrl);
-
+            //添加文件链接
+            dzdSource.setSourceOssUrl(uploadUrl);
+            System.out.println(dzdSource);
+            return this.save(dzdSource);
 
         } catch (OSSException oe) {
             System.out.println("Caught an OSSException, which means your request made it to OSS, "
@@ -224,5 +231,25 @@ public class DzdSourceServiceImpl extends ServiceImpl<DzdSourceMapper, DzdSource
 
 
         return true;
+    }
+
+    //新建文件夹
+    @Override
+    public boolean newDirectory(DirectoryVo directoryVo) {
+        DzdSource dzdSource = new DzdSource();
+        Integer count = baseMapper.selectCount(
+                new QueryWrapper<DzdSource>().
+                        eq("parent_id", directoryVo.getParentId())
+                        .eq("source_name", directoryVo.getSourceName())
+                        .eq("user_id",directoryVo.getUserId()));
+
+        //如果该用户该层级已经有了这个目录，直接返回成功
+        if (count>0){
+            return true;
+        }
+        dzdSource.setFileSize(new BigDecimal(0));
+        BeanUtils.copyProperties(directoryVo,dzdSource);
+        return this.save(dzdSource);
+
     }
 }
