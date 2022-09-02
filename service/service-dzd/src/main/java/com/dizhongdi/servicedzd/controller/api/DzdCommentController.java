@@ -89,7 +89,7 @@ public class DzdCommentController {
 
 
 
-    @GetMapping("commentStar/{commentId}")
+    @PostMapping("commentStar/{commentId}")
     @ApiOperation(value = "点赞")
     public R commentStar(@PathVariable String commentId , HttpServletRequest request){
 
@@ -107,7 +107,7 @@ public class DzdCommentController {
         return R.error().message("您已点赞过！");
     }
 
-    @GetMapping("rollbackStar/{commentId}")
+    @DeleteMapping("rollbackStar/{commentId}")
     @ApiOperation(value = "撤回点赞")
     public R rollbackStar( @PathVariable String commentId , HttpServletRequest request){
 
