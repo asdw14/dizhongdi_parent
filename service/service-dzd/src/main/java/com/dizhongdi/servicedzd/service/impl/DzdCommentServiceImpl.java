@@ -62,10 +62,11 @@ public class DzdCommentServiceImpl extends ServiceImpl<DzdCommentMapper, DzdComm
 
             //获取评论的用户信息：头像昵称
             AdminGetUserVo userInfo = userClient.getAllInfoId(commentInfo.getMemberId());
-            commentInfo.setAvatar(userInfo.getAvatar()).setNickname(userInfo.getNickname());
+            if (userInfo!=null)
+                commentInfo.setAvatar(userInfo.getAvatar()).setNickname(userInfo.getNickname());
 
             //获取子评论数量
-            Integer commentCount = baseMapper.selectCount(new QueryWrapper<DzdComment>().eq("parent_id", comment.getParentId()));
+            Integer commentCount = baseMapper.selectCount(new QueryWrapper<DzdComment>().eq("parent_id", comment.getId()));
             commentInfo.setCommentCount(commentCount);
 
             //获取嵌套评论列表
@@ -106,10 +107,10 @@ public class DzdCommentServiceImpl extends ServiceImpl<DzdCommentMapper, DzdComm
 
             //获取被回复的那个用户昵称
             String byMemberId = children.getByMemberId();
-            if (byMemberId!=null || !byMemberId.equals("0")) {
-                AdminGetUserVo byMemberInfo = userClient.getAllInfoId(byMemberId);
-                childrenInfo.setByNickname(byMemberInfo.getNickname());
-            }
+
+            //设置对谁回复的被回复人昵称
+            if (!StringUtils.isEmpty(byMemberId))
+                childrenInfo.setByNickname(userClient.getAllInfoId(byMemberId).getNickname());
             return childrenInfo;
             //将数据添加进子评论集合
         }).forEach( childrenInfo ->childrenInfos.add(childrenInfo));
@@ -156,11 +157,11 @@ public class DzdCommentServiceImpl extends ServiceImpl<DzdCommentMapper, DzdComm
 
         //判断对哪个用户评论是否为空
         if (!StringUtils.isEmpty(byMemberId)){
-            comment.setMemberId(byMemberId);
+            comment.setByMemberId(byMemberId);
         }
 
         //添加评论
-        return  this.save(comment);
+        return this.save(comment);
     }
 
     //根据帖子id获取评论
@@ -214,6 +215,33 @@ public class DzdCommentServiceImpl extends ServiceImpl<DzdCommentMapper, DzdComm
     @Override
     public boolean deleteComment(String id) {
         return this.removeById(id);
+    }
+
+    //根据评论父id和当前评论条数，每次增加10条获取子评论
+    @Override
+    public List<CommentInfoVo> getCommentChildrenByParentId(String parentId, Integer count) {
+        //返回的数据集合
+        ArrayList<CommentInfoVo> comments = new ArrayList<>();
+
+        //last拼接根据父id获取前n条子评论，有SQL注入风险，图方便用的
+        QueryWrapper<DzdComment> wrapper = new QueryWrapper<DzdComment>().eq("parent_id", parentId).last("limit " + count);
+        List<DzdComment> dzdComments = baseMapper.selectList(wrapper);
+        dzdComments.stream().map(dzdComment -> {
+            CommentInfoVo commentInfo = new CommentInfoVo();
+            //基本评论信息塞入返回
+            BeanUtils.copyProperties(dzdComment,commentInfo);
+            //获取评论人信息
+            AdminGetUserVo userInfo = userClient.getAllInfoId(dzdComment.getMemberId());
+            if (userInfo!=null)
+                commentInfo.setAvatar(userInfo.getAvatar()).setNickname(userInfo.getNickname());
+
+            String byMemberId = dzdComment.getByMemberId();
+            if (!StringUtils.isEmpty(byMemberId))
+                //设置对谁回复的被回复人昵称
+                commentInfo.setByNickname(userClient.getAllInfoId(byMemberId).getNickname());
+            return commentInfo;
+        }).forEach(commentInfo -> comments.add(commentInfo));
+        return comments;
     }
 
 }

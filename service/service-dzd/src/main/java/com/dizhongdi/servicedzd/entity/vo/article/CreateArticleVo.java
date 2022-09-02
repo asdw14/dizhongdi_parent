@@ -36,6 +36,10 @@ public class CreateArticleVo {
     @ApiModelProperty(value = "文章内容")
     private String description;
 
+    @ApiModelProperty(value = "md内容")
+    private String markdown;
+
+
     @ApiModelProperty(value = "封禁状态 0未封  1已封")
     private Integer isLock;
 

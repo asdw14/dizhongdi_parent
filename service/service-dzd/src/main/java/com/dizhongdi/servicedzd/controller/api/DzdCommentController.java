@@ -48,7 +48,6 @@ public class DzdCommentController {
         if (StringUtils.isEmpty(memberId)){
             return R.error().message("请先登录后在进行评论！");
         }
-
         commentVo.setMemberId(memberId);
 
         //调用评论
@@ -81,10 +80,21 @@ public class DzdCommentController {
 
     //根据帖子id获取评论
     @GetMapping("getCommentByArticleId/{id}")
-    @ApiOperation(value = "根据帖子id获取评论")
+    @ApiOperation(value = "根据帖子id获取评论，包括子评论前两条")
     public R getCommentByArticleId(@PathVariable String id) {
         List<CommentInfoVo> comments = commentService.getCommentByArticleId(id);
         return R.ok().data("items",comments);
+    }
+
+    //根据评论父id和当前评论条数，每次增加10条获取子评论
+    @GetMapping("getCommentChildrenByParentId/{parentId}/{count}")
+    @ApiOperation(value = "根据评论父id和当前评论条数，每次增加10条获取子评论")
+    public R getCommentChildrenByParentId(@PathVariable String parentId, @PathVariable Integer count) {
+        if (count>3){
+            count+=10;
+        }
+        List<CommentInfoVo> childrenComments = commentService.getCommentChildrenByParentId(parentId,count);
+        return R.ok().data("items",childrenComments);
     }
 
 

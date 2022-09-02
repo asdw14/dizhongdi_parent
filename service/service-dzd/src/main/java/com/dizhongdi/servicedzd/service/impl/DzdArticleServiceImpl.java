@@ -378,7 +378,8 @@ public class DzdArticleServiceImpl extends ServiceImpl<DzdArticleMapper, DzdArti
             GetAllAticleVo AticleVo = new GetAllAticleVo();
             AdminGetUserVo userinfo = userClient.getAllInfoId(article.getMemberId());
             BeanUtils.copyProperties(article,AticleVo);
-            AticleVo.setAvatar(userinfo.getAvatar()).setNickname(userinfo.getNickname());
+            if (userinfo!=null)
+                AticleVo.setAvatar(userinfo.getAvatar()).setNickname(userinfo.getNickname());
             //获取评论总数
             int commentCount = commentService.count(new QueryWrapper<DzdComment>().eq("article_id", article.getId()));
             AticleVo.setCommentCount(commentCount);
@@ -404,7 +405,8 @@ public class DzdArticleServiceImpl extends ServiceImpl<DzdArticleMapper, DzdArti
 
         //写文章的用户头像和昵称
         AdminGetUserVo userInfo = userClient.getAllInfoId(article.getMemberId());
-        articleInfo.setAvatar(userInfo.getAvatar()).setNickname(userInfo.getNickname());
+        if (userInfo!=null)
+            articleInfo.setAvatar(userInfo.getAvatar()).setNickname(userInfo.getNickname());
 
         //默认获取前10条评论及其前两条子评论
         List<CommentInfoVo> commentInfos = commentService.getCommentInfo(id,1L,10L);

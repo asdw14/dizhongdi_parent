@@ -38,5 +38,8 @@ public interface DzdCommentService extends IService<DzdComment> {
 
     //删除评论
     boolean deleteComment(String id);
+
+    //根据评论父id和当前评论条数，每次增加10条获取子评论
+    List<CommentInfoVo> getCommentChildrenByParentId(String parentId, Integer count);
 }
 
