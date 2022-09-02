@@ -36,27 +36,33 @@ public class DzdArticleController {
     DzdArticleService dzdArticleService;
 
     @ApiOperation(value = "发布帖子")
-    @PostMapping("/posting")
-    public R posting(@RequestBody CreateArticleVo articleVo){
-
+    @PostMapping("/saveOrPush")
+    public R posting(@RequestBody CreateArticleVo articleVo,HttpServletRequest request){
+        System.out.println(articleVo.getMarkdown());
+        //验证用户是否登录
+        String memberId = JwtUtils.getMemberIdByJwtToken(request);
+        System.out.println(memberId);
+        if (StringUtils.isEmpty(memberId)){
+            return R.error().message("请先登录后在进行发帖！");
+        }
+        //放入用户id
+        articleVo.setMemberId(memberId);
         //发布未成功报错
         if (!dzdArticleService.posting(articleVo)){
-            return R.error().message("文章发布失败");
+            return R.error();
         }
-        return R.ok().message("文章发布成功");
-    }
-
-    @ApiOperation(value = "根据id获取帖子")
-    @GetMapping("/{id}")
-    public R getById(@PathVariable String id){
-        //获取帖子信息
-        GetrAticleVo getrAticleVo = dzdArticleService.queryById(id);
-        return R.ok().data("item",getrAticleVo);
+        return R.ok();
     }
 
     @ApiOperation(value = "根据id删除帖子")
     @DeleteMapping("/{id}")
-    public R deleteById(@PathVariable String id){
+    public R deleteById(@PathVariable String id,HttpServletRequest request){
+        //验证用户是否登录
+        String memberId = JwtUtils.getMemberIdByJwtToken(request);
+        System.out.println(memberId);
+        if (StringUtils.isEmpty(memberId)){
+            return R.error().message("请先进行登录再进行操作！");
+        }
         if (dzdArticleService.deleteByid(id)){
             return R.ok().message("删除成功");
         }
@@ -65,7 +71,7 @@ public class DzdArticleController {
 
     @ApiOperation(value = "修改帖子")
     @PutMapping("/{id}")
-    public R update(@PathVariable String id, @RequestBody CreateArticleVo articleVo){
+    public R update(@PathVariable String id, @RequestBody CreateArticleVo articleVo,HttpServletRequest request){
 
         //修改未成功报错
         if (!dzdArticleService.updateArticle(articleVo)){
