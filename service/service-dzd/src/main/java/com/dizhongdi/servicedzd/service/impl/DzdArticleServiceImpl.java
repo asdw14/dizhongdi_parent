@@ -11,10 +11,7 @@ import com.dizhongdi.model.EsArticleVo;
 import com.dizhongdi.rabbit.config.MqConst;
 import com.dizhongdi.rabbit.service.RabbitService;
 import com.dizhongdi.servicedzd.client.UserClient;
-import com.dizhongdi.servicedzd.entity.ArticleViewLog;
-import com.dizhongdi.servicedzd.entity.DzdArticle;
-import com.dizhongdi.servicedzd.entity.DzdArticleDescription;
-import com.dizhongdi.servicedzd.entity.DzdComment;
+import com.dizhongdi.servicedzd.entity.*;
 import com.dizhongdi.servicedzd.entity.vo.article.*;
 import com.dizhongdi.servicedzd.entity.vo.comment.CommentInfoVo;
 import com.dizhongdi.servicedzd.mapper.DzdArticleMapper;
@@ -414,23 +411,46 @@ public class DzdArticleServiceImpl extends ServiceImpl<DzdArticleMapper, DzdArti
         return articleInfo;
     }
 
-    //对帖子点赞，一用户一次
+    //对帖子点赞，一用户一次，点赞撤销通用       此方法有线程安全问题待优化
     @Override
     public boolean articleStar(String articleId, String memberId) {
-        boolean flag = articleStarService.isStarByArticleAndMemberId(articleId, memberId);
-        if (flag){
+
+        DzdArticle article = this.getById(articleId);
+
+        //根据帖子id和用户id获取点赞记录，包括逻辑删除的数据，用以恢复
+        ArticleStar articleStar =  articleStarService.getStarByArticleAndMemberId(articleId,memberId);
+        System.out.println(articleStar);
+        //是否点赞过，点过就撤销，没记录就添加点赞
+        //添加点赞
+        if (articleStar == null){
             //异步执行添加点赞记录，因为此数据不重要
-//            threadPool.execute(() ->{
-                DzdArticle article = this.getById(articleId);
                 //加点赞记录
                 articleStarService.addStarLog(articleId,memberId);
                 //对帖子表加 1点赞量
                 article.setPraiseCount(article.getPraiseCount()+1);
                 this.updateById(article);
-//            });
             return true;
+        } else {
+            //恢复记录
+            if (articleStar.getIsDeleted() == 0){
+                //删除点赞记录
+
+                //如果有点赞记录就撤回点赞
+                articleStarService.removeById(articleStar.getId());
+                //减少点赞数量
+                this.updateById(article.setPraiseCount(article.getPraiseCount() - 1));
+                return false;
+            }else {
+                ArticleStar articleStar1 = articleStar.setIsDeleted(0);
+                articleStarService.updateById(articleStar1);
+                //对帖子表加 1点赞量
+                article.setPraiseCount(article.getPraiseCount()+1);
+                this.updateById(article);
+                return true;
+            }
+
         }
-        return true;
+
     }
 
     //撤销对帖子点赞
@@ -467,6 +487,12 @@ public class DzdArticleServiceImpl extends ServiceImpl<DzdArticleMapper, DzdArti
                 baseMapper.updateById(article);
             }
         }
+    }
+
+    //查询用户是否点赞过该帖子
+    @Override
+    public boolean getIsStar(String id, String memberId) {
+        return articleStarService.getIsStar(id,memberId);
     }
 
 

@@ -29,6 +29,17 @@ public class ArticleStarServiceImpl extends ServiceImpl<ArticleStarMapper, Artic
 
     }
 
+    //根据帖子id和用户id获取点赞记录，包括逻辑删除的数据，用以恢复
+    @Override
+    public ArticleStar getStarByArticleAndMemberId(String articleId, String memberId) {
+        List<ArticleStar> articleStars =  baseMapper.getStarByArticleAndMemberId(articleId,memberId);
+        System.out.println(articleStars);
+        if (articleStars.size() >= 1){
+            return articleStars.get(0);
+        }
+        return null;
+    }
+
     //添加用户点赞记录
     @Override
     public boolean addStarLog(String articleId, String memberId) {
@@ -46,5 +57,12 @@ public class ArticleStarServiceImpl extends ServiceImpl<ArticleStarMapper, Artic
         List<ArticleStar> articleStars = baseMapper.selectList(queryWrapper);
         articleStars.stream().map(articleStar -> baseMapper.deleteById(articleStar.getId())).close();
         return true;
+    }
+
+    //查询用户是否点赞过该帖子
+    @Override
+    public boolean getIsStar(String articleId, String memberId) {
+        QueryWrapper<ArticleStar> wrapper = new QueryWrapper<ArticleStar>().eq("article_id", articleId).eq("member_id", memberId);
+            return baseMapper.selectCount(wrapper) > 0 ? true : false;
     }
 }

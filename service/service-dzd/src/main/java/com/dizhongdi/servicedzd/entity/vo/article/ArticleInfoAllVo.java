@@ -54,6 +54,9 @@ public class ArticleInfoAllVo {
     @ApiModelProperty(value = "点赞数量")
     private Long praiseCount;
 
+    @ApiModelProperty(value = "是否点赞")
+    private boolean starIs = false;
+
     @ApiModelProperty(value = "购买数量")
     private Long buyCount;
 

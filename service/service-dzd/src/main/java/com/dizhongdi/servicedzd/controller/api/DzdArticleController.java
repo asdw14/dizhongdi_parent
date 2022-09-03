@@ -101,18 +101,25 @@ public class DzdArticleController {
     @PostMapping("getArticleInfo/{id}")
     public R getArticleInfo(
             @ApiParam(name = "id", value = "id", required = true) @PathVariable String id, HttpServletRequest request) {
-        ArticleInfoAllVo aticleInfo =  dzdArticleService.getAticleInfo(id);
+        ArticleInfoAllVo articleInfo =  dzdArticleService.getAticleInfo(id);
         String ipAddr = IpUtils.getIpAddress(request);
         System.out.println("===================================================="+ipAddr);
         //验证用户是否登录
         String memberId = JwtUtils.getMemberIdByJwtToken(request);
+        //查询用户是否点赞过该帖子
+        if (!StringUtils.isEmpty(memberId)){
+            boolean isStar = dzdArticleService.getIsStar(id,memberId);
+            if (isStar)
+                articleInfo.setStarIs(isStar);
+        }
+
         //根据用户id增加浏览次数，一个用户增加一次
         dzdArticleService.addArticleViewCountByMemberId(id,memberId);
-        return R.ok().data("item" , aticleInfo);
+        return R.ok().data("item" , articleInfo);
     }
 
-    @GetMapping("articleStar/{articleId}")
-    @ApiOperation(value = "点赞")
+    @PutMapping("articleStar/{articleId}")
+    @ApiOperation(value = "点赞和撤销通用")
     public R articleStar( @PathVariable String articleId , HttpServletRequest request){
 
         //验证用户是否登录
@@ -122,29 +129,12 @@ public class DzdArticleController {
             return R.error().message("请先登录后在进行点赞！");
         }
 
-        //调用方法点赞
-        if (dzdArticleService.articleStar(articleId,memberId)){
-            return R.ok().message("点赞成功");
-        }
-        return R.error().message("点赞失败");
+        //返回true是点赞，false是没点赞
+        boolean flag = dzdArticleService.articleStar(articleId, memberId);
+
+        return R.ok().data("starIs",flag);
+
     }
 
-    @GetMapping("rollbackStar/{articleId}")
-    @ApiOperation(value = "撤回点赞")
-    public R rollbackStar( @PathVariable String articleId , HttpServletRequest request){
-
-        //验证用户是否登录
-        String memberId = JwtUtils.getMemberIdByJwtToken(request);
-        System.out.println(memberId);
-        if (StringUtils.isEmpty(memberId)){
-            return R.error().message("请先登录后在进行点赞！");
-        }
-
-        //调用方法点赞
-        if (dzdArticleService.rollbackStar(articleId,memberId)){
-            return R.ok();
-        }
-        return R.error();
-    }
 }
 
