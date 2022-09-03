@@ -103,14 +103,19 @@ public class DzdCommentServiceImpl extends ServiceImpl<DzdCommentMapper, DzdComm
 
             //获取评论人头像昵称
             AdminGetUserVo userInfo = userClient.getAllInfoId(children.getMemberId());
-            childrenInfo.setAvatar(userInfo.getAvatar()).setNickname(userInfo.getNickname());
+            if (userInfo!=null)
+                childrenInfo.setAvatar(userInfo.getAvatar()).setNickname(userInfo.getNickname());
 
             //获取被回复的那个用户昵称
             String byMemberId = children.getByMemberId();
 
             //设置对谁回复的被回复人昵称
-            if (!StringUtils.isEmpty(byMemberId))
-                childrenInfo.setByNickname(userClient.getAllInfoId(byMemberId).getNickname());
+            if (!StringUtils.isEmpty(byMemberId)){
+                AdminGetUserVo by = userClient.getAllInfoId(byMemberId);
+                if (by!=null)
+                    childrenInfo.setByNickname(by.getNickname());
+            }
+
             return childrenInfo;
             //将数据添加进子评论集合
         }).forEach( childrenInfo ->childrenInfos.add(childrenInfo));
@@ -236,9 +241,11 @@ public class DzdCommentServiceImpl extends ServiceImpl<DzdCommentMapper, DzdComm
                 commentInfo.setAvatar(userInfo.getAvatar()).setNickname(userInfo.getNickname());
 
             String byMemberId = dzdComment.getByMemberId();
-            if (!StringUtils.isEmpty(byMemberId))
-                //设置对谁回复的被回复人昵称
-                commentInfo.setByNickname(userClient.getAllInfoId(byMemberId).getNickname());
+            //设置对谁回复的被回复人昵称
+            if (!StringUtils.isEmpty(byMemberId)){
+                AdminGetUserVo by = userClient.getAllInfoId(byMemberId);
+                commentInfo.setByNickname(by.getNickname());
+            }
             return commentInfo;
         }).forEach(commentInfo -> comments.add(commentInfo));
         return comments;
