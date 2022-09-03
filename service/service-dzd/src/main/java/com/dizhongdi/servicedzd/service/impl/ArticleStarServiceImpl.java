@@ -65,4 +65,9 @@ public class ArticleStarServiceImpl extends ServiceImpl<ArticleStarMapper, Artic
         QueryWrapper<ArticleStar> wrapper = new QueryWrapper<ArticleStar>().eq("article_id", articleId).eq("member_id", memberId);
             return baseMapper.selectCount(wrapper) > 0 ? true : false;
     }
+
+    @Override
+    public void setIsDeleted(String id, int i) {
+        baseMapper.setIsDeleted(id,i);
+    }
 }

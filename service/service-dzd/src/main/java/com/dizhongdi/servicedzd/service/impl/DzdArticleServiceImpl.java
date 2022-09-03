@@ -436,13 +436,13 @@ public class DzdArticleServiceImpl extends ServiceImpl<DzdArticleMapper, DzdArti
                 //删除点赞记录
 
                 //如果有点赞记录就撤回点赞
-                articleStarService.removeById(articleStar.getId());
+                articleStarService.setIsDeleted(articleStar.getId(),1);
                 //减少点赞数量
                 this.updateById(article.setPraiseCount(article.getPraiseCount() - 1));
                 return false;
             }else {
-                ArticleStar articleStar1 = articleStar.setIsDeleted(0);
-                articleStarService.updateById(articleStar1);
+                articleStarService.setIsDeleted(articleStar.getId(),0);
+
                 //对帖子表加 1点赞量
                 article.setPraiseCount(article.getPraiseCount()+1);
                 this.updateById(article);

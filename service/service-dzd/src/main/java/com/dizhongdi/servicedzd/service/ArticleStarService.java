@@ -28,4 +28,6 @@ public interface ArticleStarService extends IService<ArticleStar> {
 
     //查询用户是否点赞过该帖子
     boolean getIsStar(String id, String memberId);
+
+    void setIsDeleted(String id, int i);
 }

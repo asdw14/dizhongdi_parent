@@ -18,4 +18,7 @@ public interface ArticleStarMapper extends BaseMapper<ArticleStar> {
 
     //根据帖子id和用户id获取点赞记录，包括逻辑删除的数据，用以恢复
     List<ArticleStar> getStarByArticleAndMemberId(@Param("articleId") String articleId,@Param("memberId") String memberId);
+
+    //修改是否逻辑删除
+    void setIsDeleted(String id, int i);
 }
