@@ -17,4 +17,22 @@ public class UserClientImpl implements UserClient {
     public AdminGetUserVo getAllInfoId(String id) {
         return new AdminGetUserVo().setNickname("加载失败");
     }
+
+    //根据用户id获取剩余容量
+    @Override
+    public Double getDatasizeByMemberId(String memberId) {
+        return 0.0;
+    }
+
+    //增加用户剩余容量
+    @Override
+    public boolean addDatasize(String memberId, Double size) {
+        return true;
+    }
+
+    //减少用户剩余容量
+    @Override
+    public boolean cutDatasize(String memberId, Double size) {
+        return true;
+    }
 }

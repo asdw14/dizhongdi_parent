@@ -36,10 +36,10 @@ public class DzdDatasize implements Serializable {
     private String id;
 
     @ApiModelProperty(value = "总容量")
-    private BigDecimal datasize;
+    private Double datasize;
 
     @ApiModelProperty(value = "剩余容量")
-    private BigDecimal surplus;
+    private Double surplus;
 
     @ApiModelProperty(value = "是否可以上传文件")
     private Integer status;

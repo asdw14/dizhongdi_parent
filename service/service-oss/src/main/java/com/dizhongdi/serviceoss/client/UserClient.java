@@ -5,6 +5,7 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 
 /**
  * ClassName:UserClient
@@ -19,4 +20,18 @@ import org.springframework.web.bind.annotation.PathVariable;
 public interface UserClient {
     @GetMapping("/admin/user/userAllInfo/{id}")
     public AdminGetUserVo getAllInfoId(@PathVariable String id);
+
+
+    //根据用户id获取剩余容量
+    @PostMapping("/api/user/datasize/getDatasizeByMemberId/{memberId}")
+    Double getDatasizeByMemberId(@PathVariable String memberId);
+
+    //增加用户剩余容量
+    @PostMapping("/api/user/datasize/addDatasize/{memberId}/{size}")
+    boolean addDatasize(@PathVariable String memberId, @PathVariable Double size);
+
+    //减少用户剩余容量
+    @PostMapping("/api/user/datasize/cutDatasize/{memberId}/{size}")
+    boolean cutDatasize(@PathVariable String memberId, @PathVariable Double size);
+
 }

@@ -47,4 +47,7 @@ public interface DzdSourceService extends IService<DzdSource> {
 
     //根据获取的文件夹id获取文件夹父id以做返回
     String getParentDirectoryId(String id);
+
+    //根据id删除文件或文件夹
+    boolean deleteByMemberAndSourceId(String memberId, String id);
 }

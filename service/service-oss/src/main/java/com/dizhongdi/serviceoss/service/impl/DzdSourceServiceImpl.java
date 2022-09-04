@@ -7,6 +7,7 @@ import com.aliyun.oss.OSSException;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.dizhongdi.model.AdminGetUserVo;
+import com.dizhongdi.servicebase.exceptionhandler.DzdException;
 import com.dizhongdi.serviceoss.client.UserClient;
 import com.dizhongdi.serviceoss.entity.DzdSource;
 import com.dizhongdi.serviceoss.entity.vo.DirectoryVo;
@@ -16,12 +17,10 @@ import com.dizhongdi.serviceoss.entity.vo.UploadInfo;
 import com.dizhongdi.serviceoss.mapper.DzdSourceMapper;
 import com.dizhongdi.serviceoss.service.DzdSourceService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.dizhongdi.serviceoss.utils.ConstantPropertiesUtil;
 import org.joda.time.DateTime;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 import org.springframework.util.StringUtils;
@@ -32,7 +31,6 @@ import java.io.InputStream;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * <p>
@@ -186,7 +184,7 @@ public class DzdSourceServiceImpl extends ServiceImpl<DzdSourceMapper, DzdSource
             //大小 byte
             double fileSize = file.getBytes().length;
             //把byte转为MB单位
-            dzdSource.setFileSize(new BigDecimal((fileSize/1024/1024)));
+            dzdSource.setFileSize((fileSize/1024/1024));
 
             //构建日期路径：avatar/2019/02/26/文件名
             String datePath = new DateTime().toString("yyyy/MM/dd");
@@ -247,7 +245,7 @@ public class DzdSourceServiceImpl extends ServiceImpl<DzdSourceMapper, DzdSource
         if (count>0){
             return true;
         }
-        dzdSource.setFileSize(new BigDecimal(0));
+        dzdSource.setFileSize(0.00);
         BeanUtils.copyProperties(directoryVo,dzdSource);
         return this.save(dzdSource);
 
@@ -288,5 +286,27 @@ public class DzdSourceServiceImpl extends ServiceImpl<DzdSourceMapper, DzdSource
             return id;
         }
         return baseMapper.selectById(id).getParentId();
+    }
+
+
+    //根据id删除文件或文件夹
+    @Override
+    public boolean deleteByMemberAndSourceId(String memberId, String id) {
+        DzdSource source = baseMapper.selectById(id);
+        //如果文件不存在直接返回成功
+        if (source==null){
+            return true;
+        }
+        //判断该文件请求发起者是否和文件所有人是一位
+        if ((StringUtils.isEmpty(source.getMemberId())) && !(source.getMemberId().equals(memberId))){
+            throw new DzdException( 30001, "仅能删除自己上传的文件");
+        }
+        //删除文件记录
+        baseMapper.deleteById(id);
+
+        //添加回用户删除的容量
+        userClient.addDatasize(memberId,source.getFileSize());
+
+        return true;
     }
 }

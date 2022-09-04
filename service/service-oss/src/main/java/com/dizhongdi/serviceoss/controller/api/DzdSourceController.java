@@ -68,7 +68,7 @@ public class DzdSourceController {
         //验证用户是否登录
         String memberId = JwtUtils.getMemberIdByJwtToken(request);
         if (StringUtils.isEmpty(memberId)){
-            return R.error().message("您还未登录哦，请先登录在获取个人空间资源^_^");
+            return R.error().message("您还未登录哦，请先登录再查看个人空间资源^_^");
         }
 
         //如果父文件夹id为空直接获取顶层文件
@@ -144,10 +144,11 @@ public class DzdSourceController {
                         @RequestBody DirectoryVo directoryVo, HttpServletRequest request){
 
         //验证用户是否登录
-        String userId = JwtUtils.getMemberIdByJwtToken(request);
-        if (StringUtils.isEmpty(userId)){
-            directoryVo.setMemberId(userId);
+        String memberId = JwtUtils.getMemberIdByJwtToken(request);
+        if (StringUtils.isEmpty(memberId)){
+            return R.error().message("您还未登录哦，请先登录再创建文件夹^_^");
         }
+        directoryVo.setMemberId(memberId);
 
         //文件夹名不能为空
         if (StringUtils.isEmpty(directoryVo.getSourceName())){
@@ -167,5 +168,28 @@ public class DzdSourceController {
         }
         return R.error().message("新建文件夹失败");
     }
+
+
+    @ApiOperation(value = "根据id删除文件或文件夹")
+    @DeleteMapping("deleteSource/{id}")
+    public R deleteSource(@ApiParam(name = "id", value = "文件或文件夹id", required = true)
+                          @PathVariable String id, HttpServletRequest request){
+
+        //验证用户是否登录
+        String memberId = JwtUtils.getMemberIdByJwtToken(request);
+        if (StringUtils.isEmpty(memberId)){
+            return R.error().message("您还未登录哦，请先登录再删除文件^_^");
+        }
+
+        if(sourceService.deleteByMemberAndSourceId(memberId,id)){
+            return R.ok();
+        }else {
+            return R.error().message("您的网络出现问题，请稍后重试");
+        }
+
+
+
+    }
+
 }
 
