@@ -58,6 +58,31 @@ public class DzdSourceController {
         return R.ok().data("items", queryList).data("total", sourcePage.getTotal());
     }
 
+
+    @ApiOperation(value = "根据文件夹id获取个人资源")
+    @PostMapping("getMemberSourceByDirectoryId/{id}")
+    public R getMemberSourceByDirectoryId(@PathVariable String id,
+                                          @RequestBody SourceQuery sourceQuery,
+                                                HttpServletRequest request){
+
+        //验证用户是否登录
+        String memberId = JwtUtils.getMemberIdByJwtToken(request);
+        if (StringUtils.isEmpty(memberId)){
+            return R.error().message("您还未登录哦，请先登录在获取个人空间资源^_^");
+        }
+
+        //如果父文件夹id为空直接获取顶层文件
+        if (StringUtils.isEmpty(id)){
+            id = "0";
+        }
+
+        List<SourceInfoVo> sourceList = sourceService.getMemberSourceByDirectoryId(id,memberId,sourceQuery);
+
+        //根据获取的文件夹id获取文件夹父id以做返回
+        String parentId = sourceService.getParentDirectoryId(id);
+        return R.ok().data("items",sourceList).data("parentId",parentId);
+    }
+
     @ApiOperation(value = "上传资源文件")
     @PostMapping("uploadSource")
     public R upload(@ApiParam(name = "file", value = "文件", required = true) @RequestParam("file") MultipartFile file,
@@ -78,7 +103,7 @@ public class DzdSourceController {
         //验证用户是否登录
         String userId = JwtUtils.getMemberIdByJwtToken(request);
         if (StringUtils.isEmpty(userId)){
-            uploadInfo.setUserId(userId);
+            uploadInfo.setMemberId(userId);
         }
 
         //用户给的名,没给就默认原始文件名
@@ -114,14 +139,14 @@ public class DzdSourceController {
 
 
     @ApiOperation(value = "新建文件夹")
-    @PostMapping("newDirectory")
+    @PostMapping("createDirectory")
     public R newDirectory(@ApiParam(name = "directoryVo", value = "文件夹信息", required = true)
                         @RequestBody DirectoryVo directoryVo, HttpServletRequest request){
 
         //验证用户是否登录
         String userId = JwtUtils.getMemberIdByJwtToken(request);
         if (StringUtils.isEmpty(userId)){
-            directoryVo.setUserId(userId);
+            directoryVo.setMemberId(userId);
         }
 
         //文件夹名不能为空

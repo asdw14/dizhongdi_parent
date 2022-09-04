@@ -35,7 +35,7 @@ public class DzdSource implements Serializable {
     private String id;
 
     @ApiModelProperty(value = "上传用户的id")
-    private String userId;
+    private String memberId;
 
     @ApiModelProperty(value = "父层级id")
     private String parentId;

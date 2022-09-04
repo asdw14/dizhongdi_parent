@@ -26,7 +26,7 @@ import java.util.Date;
 @ApiModel(value="上传文件信息", description="上传文件信息")
 public class UploadInfo {
     @ApiModelProperty(value = "上传用户的id")
-    private String userId;
+    private String memberId;
 
     @ApiModelProperty(value = "父层级id")
     private String parentId;

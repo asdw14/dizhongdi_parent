@@ -32,5 +32,5 @@ public class DirectoryVo {
     private String isPublic;
 
     @ApiModelProperty(value = "上传用户的id")
-    private String userId;
+    private String memberId;
 }

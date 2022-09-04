@@ -66,7 +66,7 @@ public class DzdSourceServiceImpl extends ServiceImpl<DzdSourceMapper, DzdSource
         List<SourceInfoVo> sourcesList = new ArrayList<>();
         QueryWrapper<DzdSource> wrapper = new QueryWrapper<>();
         //用户id
-        String userId = sourceQuery.getUserId();
+        String userId = sourceQuery.getMemberId();
         //文件大小范围
         BigDecimal minfileSize = sourceQuery.getMinfileSize();
         BigDecimal maxfileSize = sourceQuery.getMaxfileSize();
@@ -90,7 +90,7 @@ public class DzdSourceServiceImpl extends ServiceImpl<DzdSourceMapper, DzdSource
         if (sourceQuery!=null){
             //if查询条件里的上传用户id不为空
             if (!StringUtils.isEmpty(userId))
-                wrapper.eq("user_id",userId);
+                wrapper.eq("member_id",userId);
 
             //if查询条件里的文件大小范围不为空
             if (!(StringUtils.isEmpty(minfileSize)&&StringUtils.isEmpty(maxfileSize)))
@@ -115,7 +115,7 @@ public class DzdSourceServiceImpl extends ServiceImpl<DzdSourceMapper, DzdSource
             SourceInfoVo source = new SourceInfoVo();
             BeanUtils.copyProperties(record,source);
             //获取用户头像昵称
-            AdminGetUserVo user = userClient.getAllInfoId(record.getUserId());
+            AdminGetUserVo user = userClient.getAllInfoId(record.getMemberId());
             source.setAvatar(user.getAvatar()).setNickname(user.getNickname());
             return source;
         }).forEach(source -> sourcesList.add(source));
@@ -150,7 +150,7 @@ public class DzdSourceServiceImpl extends ServiceImpl<DzdSourceMapper, DzdSource
         BeanUtils.copyProperties(source,sourceInfo);
         //远程调用根据用户id获取用户信息
         AdminGetUserVo user = userClient.getAllInfoId(id);
-        sourceInfo.setAvatar(user.getAvatar()).setUserId(user.getId());
+        sourceInfo.setAvatar(user.getAvatar()).setMemberId(user.getId());
         return sourceInfo;
     }
 
@@ -192,7 +192,7 @@ public class DzdSourceServiceImpl extends ServiceImpl<DzdSourceMapper, DzdSource
             String datePath = new DateTime().toString("yyyy/MM/dd");
 
             //文件路径:用户id/上传日期/用户给的文件名
-            String userId = uploadInfo.getUserId();
+            String userId = uploadInfo.getMemberId();
             String uploadUrl = null;
             String filepath;
             if (!StringUtils.isEmpty(userId))
@@ -241,7 +241,7 @@ public class DzdSourceServiceImpl extends ServiceImpl<DzdSourceMapper, DzdSource
                 new QueryWrapper<DzdSource>().
                         eq("parent_id", directoryVo.getParentId())
                         .eq("source_name", directoryVo.getSourceName())
-                        .eq("user_id",directoryVo.getUserId()));
+                        .eq("member_id",directoryVo.getMemberId()));
 
         //如果该用户该层级已经有了这个目录，直接返回成功
         if (count>0){
@@ -251,5 +251,42 @@ public class DzdSourceServiceImpl extends ServiceImpl<DzdSourceMapper, DzdSource
         BeanUtils.copyProperties(directoryVo,dzdSource);
         return this.save(dzdSource);
 
+    }
+
+    //根据父文件夹id获取个人资源
+    @Override
+    public List<SourceInfoVo> getMemberSourceByDirectoryId(String id, String memberId, SourceQuery sourceQuery) {
+        ArrayList<SourceInfoVo> sourceList = new ArrayList<>();
+
+        QueryWrapper<DzdSource> wrapper = new QueryWrapper<DzdSource>().eq("parent_id", id).eq("member_id", memberId);
+
+        List<DzdSource> dzdSources = baseMapper.selectList(wrapper);
+
+        dzdSources.stream().forEach( source ->{
+            SourceInfoVo sourceInfoVo = new SourceInfoVo();
+            BeanUtils.copyProperties(source,sourceInfoVo);
+            sourceList.add(sourceInfoVo);
+            }
+        );
+
+        //根据文件名查找返回所有对应文件
+        //获取远程调用es查询
+//        if ((sourceQuery!=null) && (sourceQuery.getSourceName()!=null)){
+//            QueryWrapper<DzdSource> queryWrapper = new QueryWrapper<>().like("source_name",sourceQuery.getSourceName());
+//
+//
+//        }
+
+        return sourceList;
+    }
+
+
+    //根据获取的文件夹id获取文件夹父id以做返回
+    @Override
+    public String getParentDirectoryId(String id) {
+        if ("0".equals(id)){
+            return id;
+        }
+        return baseMapper.selectById(id).getParentId();
     }
 }

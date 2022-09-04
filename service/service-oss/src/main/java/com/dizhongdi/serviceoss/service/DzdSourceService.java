@@ -42,4 +42,9 @@ public interface DzdSourceService extends IService<DzdSource> {
     //新建文件夹
     boolean newDirectory(DirectoryVo directoryVo);
 
+    //根据父文件夹id获取个人资源
+    List<SourceInfoVo> getMemberSourceByDirectoryId(String id,  String memberId, SourceQuery sourceQuery);
+
+    //根据获取的文件夹id获取文件夹父id以做返回
+    String getParentDirectoryId(String id);
 }

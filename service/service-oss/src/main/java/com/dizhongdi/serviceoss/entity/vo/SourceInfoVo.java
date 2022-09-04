@@ -28,7 +28,7 @@ public class SourceInfoVo {
     private String id;
 
     @ApiModelProperty(value = "上传用户的id")
-    private String userId;
+    private String memberId;
 
     @ApiModelProperty(value = "用户名")
     private String nickname;

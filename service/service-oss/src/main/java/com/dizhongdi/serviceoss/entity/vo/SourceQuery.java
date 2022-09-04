@@ -33,7 +33,7 @@ public class SourceQuery implements Serializable {
     private String id;
 
     @ApiModelProperty(value = "上传用户的id")
-    private String userId;
+    private String memberId;
 
     @ApiModelProperty(value = "简短的资源描述")
     private String sourceName;
