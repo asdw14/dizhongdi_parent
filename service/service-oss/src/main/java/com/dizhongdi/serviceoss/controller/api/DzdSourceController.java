@@ -203,9 +203,22 @@ public class DzdSourceController {
         }else {
             return R.error().message("您的网络出现问题，请稍后重试");
         }
+    }
 
+    @ApiOperation(value = "根据id获取url")
+    @PostMapping("getOssUrl/{id}")
+    public R getOssUrl(@ApiParam(name = "id", value = "文件id", required = true)
+                          @PathVariable String id, HttpServletRequest request){
 
+        //验证用户是否登录
+        String memberId = JwtUtils.getMemberIdByJwtToken(request);
+        if (StringUtils.isEmpty(memberId)){
+//            return R.error().message("您还未登录哦，请先登录再删除文件^_^");
+        }
 
+        //增加下载次数
+        boolean b = sourceService.addDownCount(id);
+        return R.ok();
     }
 
 }

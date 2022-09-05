@@ -337,4 +337,12 @@ public class DzdSourceServiceImpl extends ServiceImpl<DzdSourceMapper, DzdSource
 
         return true;
     }
+
+    //增加下载次数
+    @Override
+    public boolean addDownCount(String id) {
+        DzdSource dzdSource = baseMapper.selectById(id);
+        DzdSource downCount = dzdSource.setDownCount(dzdSource.getDownCount() + 1);
+        return this.updateById(downCount);
+    }
 }

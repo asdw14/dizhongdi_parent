@@ -50,4 +50,7 @@ public interface DzdSourceService extends IService<DzdSource> {
 
     //根据id删除文件或文件夹
     boolean deleteByMemberAndSourceId(String memberId, String id);
+
+    //增加下载次数
+    boolean addDownCount(String id);
 }
