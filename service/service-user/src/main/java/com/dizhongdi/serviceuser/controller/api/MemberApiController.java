@@ -1,5 +1,6 @@
 package com.dizhongdi.serviceuser.controller.api;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.dizhongdi.result.R;
 import com.dizhongdi.serviceuser.entity.LoginInfo;
 import com.dizhongdi.serviceuser.entity.LoginVo;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
  * ClassName:MemberApiController

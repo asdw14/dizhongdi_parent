@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.dizhongdi.model.AdminGetUserVo;
+import com.dizhongdi.model.UcenterMember;
 import com.dizhongdi.servicedzd.client.UserClient;
 import com.dizhongdi.servicedzd.entity.DzdArticle;
 import com.dizhongdi.servicedzd.entity.DzdComment;
@@ -55,15 +56,27 @@ public class DzdCommentServiceImpl extends ServiceImpl<DzdCommentMapper, DzdComm
 
         List<DzdComment> comments = selectPage.getRecords();
 
+        //获取所有用户
+        List<UcenterMember> allMember = userClient.getAllMember();
+
         comments.stream().map(comment ->{
             CommentInfoVo commentInfo = new CommentInfoVo();
             //一级评论基本信息
             BeanUtils.copyProperties(comment,commentInfo);
 
             //获取评论的用户信息：头像昵称
-            AdminGetUserVo userInfo = userClient.getAllInfoId(commentInfo.getMemberId());
-            if (userInfo!=null)
-                commentInfo.setAvatar(userInfo.getAvatar()).setNickname(userInfo.getNickname());
+            if (allMember!=null){
+                allMember.forEach( user ->{
+                    if (user.getId().equals(commentInfo.getMemberId())){
+                        commentInfo.setAvatar(user.getAvatar()).setNickname(user.getNickname());
+
+                    }
+                } );
+            }
+//
+//            AdminGetUserVo userInfo = userClient.getAllInfoId(commentInfo.getMemberId());
+//            if (userInfo!=null)
+//                commentInfo.setAvatar(userInfo.getAvatar()).setNickname(userInfo.getNickname());
 
             //获取子评论数量
             Integer commentCount = baseMapper.selectCount(new QueryWrapper<DzdComment>().eq("parent_id", comment.getId()));
@@ -81,6 +94,9 @@ public class DzdCommentServiceImpl extends ServiceImpl<DzdCommentMapper, DzdComm
 
     //获取嵌套评论列表
     public List<CommentInfoVo> getChildrenList( CommentInfoVo commentInfo){
+        //获取所有用户
+        List<UcenterMember> allMember = userClient.getAllMember();
+
         //子评论列表
         ArrayList<CommentInfoVo> childrenInfos = new ArrayList<>();
 
@@ -102,18 +118,31 @@ public class DzdCommentServiceImpl extends ServiceImpl<DzdCommentMapper, DzdComm
             BeanUtils.copyProperties(children,childrenInfo);
 
             //获取评论人头像昵称
-            AdminGetUserVo userInfo = userClient.getAllInfoId(children.getMemberId());
-            if (userInfo!=null)
-                childrenInfo.setAvatar(userInfo.getAvatar()).setNickname(userInfo.getNickname());
+//            AdminGetUserVo userInfo = userClient.getAllInfoId(children.getMemberId());
+            if (allMember!=null){
+                allMember.forEach( user ->{
+                    if (user.getId().equals(commentInfo.getMemberId())){
+                        childrenInfo.setAvatar(user.getAvatar()).setNickname(user.getNickname());
+                    }
+                } );
+            }
 
             //获取被回复的那个用户昵称
             String byMemberId = children.getByMemberId();
 
             //设置对谁回复的被回复人昵称
             if (!StringUtils.isEmpty(byMemberId)){
-                AdminGetUserVo by = userClient.getAllInfoId(byMemberId);
-                if (by!=null)
-                    childrenInfo.setByNickname(by.getNickname());
+                if (allMember!=null){
+                    allMember.forEach( user ->{
+                        if (user.getId().equals(commentInfo.getMemberId())){
+                            childrenInfo.setByNickname(user.getNickname());
+                        }
+                    } );
+                }
+
+//                AdminGetUserVo by = userClient.getAllInfoId(byMemberId);
+//                if (by!=null)
+//                    childrenInfo.setByNickname(by.getNickname());
             }
 
             return childrenInfo;

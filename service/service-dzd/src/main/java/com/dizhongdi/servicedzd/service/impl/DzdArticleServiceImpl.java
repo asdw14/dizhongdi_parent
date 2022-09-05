@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.dizhongdi.model.AdminGetUserVo;
 import com.dizhongdi.model.EsArticleVo;
+import com.dizhongdi.model.UcenterMember;
 import com.dizhongdi.rabbit.config.MqConst;
 import com.dizhongdi.rabbit.service.RabbitService;
 import com.dizhongdi.servicedzd.client.UserClient;
@@ -69,6 +70,15 @@ public class DzdArticleServiceImpl extends ServiceImpl<DzdArticleMapper, DzdArti
     public boolean posting(CreateArticleVo articleVo) {
         DzdArticle article = new DzdArticle();
         BeanUtils.copyProperties(articleVo,article);
+        //添加简短预览
+        if (articleVo.getDescription().length()<35){
+            article.setSummary(articleVo.getDescription());
+        }else {
+            //截取前35个字放入预览
+            String summary = articleVo.getDescription().substring(0, 35);
+            article.setSummary(summary);
+
+        }
 
         if (baseMapper.insert(article) > 0) {
             //将正文添加到正文表
@@ -370,13 +380,26 @@ public class DzdArticleServiceImpl extends ServiceImpl<DzdArticleMapper, DzdArti
         }
 
         //远程调用获取帖子发布用户头像和昵称
+        //获取所有用户
+        List<UcenterMember> allMember = userClient.getAllMember();
+
         IPage<DzdArticle> selectPage = baseMapper.selectPage(articlePage, wrapper);
         selectPage.getRecords().stream().map(article -> {
             GetAllAticleVo AticleVo = new GetAllAticleVo();
-            AdminGetUserVo userinfo = userClient.getAllInfoId(article.getMemberId());
+//            AdminGetUserVo userinfo = userClient.getAllInfoId(article.getMemberId());
+            if (allMember!=null){
+                allMember.forEach( user ->{
+                    if (user.getId().equals(article.getMemberId())){
+                        AticleVo.setAvatar(user.getAvatar()).setNickname(user.getNickname());
+
+                    }
+                } );
+            }
+
             BeanUtils.copyProperties(article,AticleVo);
-            if (userinfo!=null)
-                AticleVo.setAvatar(userinfo.getAvatar()).setNickname(userinfo.getNickname());
+//            if (userinfo!=null)
+//                AticleVo.setAvatar(userinfo.getAvatar()).setNickname(userinfo.getNickname());
+
             //获取评论总数
             int commentCount = commentService.count(new QueryWrapper<DzdComment>().eq("article_id", article.getId()));
             AticleVo.setCommentCount(commentCount);

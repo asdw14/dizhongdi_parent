@@ -1,5 +1,6 @@
 package com.dizhongdi.serviceuser.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.dizhongdi.result.R;
@@ -62,5 +63,12 @@ public class UserAdminController {
     @GetMapping("userAllInfo/{id}")
     public AdminGetUserVo getAllInfoId(@PathVariable String id){
         return userAdminService.queryById(id);
+    }
+
+
+    //获取所有用户信息
+    @PostMapping("getAllMember")
+    public List<UcenterMember> getAllMember(){
+        return userAdminService.list(new QueryWrapper<UcenterMember>());
     }
 }
