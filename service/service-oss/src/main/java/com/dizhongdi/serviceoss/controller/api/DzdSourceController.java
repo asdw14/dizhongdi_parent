@@ -62,7 +62,7 @@ public class DzdSourceController {
     @ApiOperation(value = "根据文件夹id获取个人资源")
     @PostMapping("getMemberSourceByDirectoryId/{id}")
     public R getMemberSourceByDirectoryId(@PathVariable String id,
-                                          @RequestBody SourceQuery sourceQuery,
+                                          @RequestBody(required = false) SourceQuery sourceQuery,
                                                 HttpServletRequest request){
 
         //验证用户是否登录
@@ -83,16 +83,12 @@ public class DzdSourceController {
         return R.ok().data("items",sourceList).data("parentId",parentId);
     }
 
-    @ApiOperation(value = "上传资源文件")
-    @PostMapping("uploadSource")
+    @ApiOperation(value = "上传公开资源文件")
+    @PostMapping("uploadSource/{sourceName}/{price}")
     public R upload(@ApiParam(name = "file", value = "文件", required = true) @RequestParam("file") MultipartFile file,
                     HttpServletRequest request,
-                    @ApiParam(name = "sourceName", value = "用户写的文件名", required = false) @RequestParam(value = "sourceName", required = false) String sourceName,
-                    @ApiParam(name = "parentId", value = "父id", required = false) @RequestParam(value = "parentId", required = false) String parentId,
-                    @ApiParam(name = "price", value = "价格", required = false) @RequestParam(value = "price", required = false) Integer price,
-                    @ApiParam(name = "isPublic", value = "是否公开", required = false) @RequestParam(value = "isPublic", required = false) Integer isPublic
-
-    ) {
+                    @PathVariable(required = false) String sourceName,
+                    @ApiParam(name = "price", value = "价格", required = false) @PathVariable(required = false)  Integer price) {
         //判断上传文件是否为空,为空返回报错
         boolean empty = file.isEmpty();
         if (empty) {
@@ -103,45 +99,66 @@ public class DzdSourceController {
         //验证用户是否登录
         String userId = JwtUtils.getMemberIdByJwtToken(request);
         if (StringUtils.isEmpty(userId)){
-            uploadInfo.setMemberId(userId);
+            return R.error().message("您还未进行登录哦！");
         }
+
+        uploadInfo.setMemberId(userId);
 
         //用户给的名,没给就默认原始文件名
-        if (!StringUtils.isEmpty(sourceName)) {
-            uploadInfo.setSourceName(sourceName);
+        if (StringUtils.isEmpty(sourceName)) {
+            uploadInfo.setSourceName(file.getOriginalFilename());
         }
-        uploadInfo.setSourceName(file.getOriginalFilename());
+        uploadInfo.setSourceName(sourceName);
 
         //价格，为空默认为0
-        if (!StringUtils.isEmpty(price)) {
+        if (StringUtils.isEmpty(price)) {
+            uploadInfo.setPrice(0);
+        }else {
             uploadInfo.setPrice(price);
         }
-        uploadInfo.setPrice(0);
 
-        //是否公开，为空表示默认公开
-        if (!StringUtils.isEmpty(isPublic)) {
-            uploadInfo.setIsPublic(isPublic);
-        }
-
-        //上层文件夹id，默认为0
-        if (!StringUtils.isEmpty(parentId)) {
-            uploadInfo.setParentId(parentId);
-        }
         uploadInfo.setParentId("0");
+
+        uploadInfo.setIsPublic(1);
         //调用service方法上传
         boolean b = sourceService.uploadSource(file, uploadInfo);
         if (b) {
-            return R.ok();
+            return R.ok().message("上传成功");
         }
         return R.error().message("上传文件失败");
 
     }
 
+    @ApiOperation(value = "个人云上传文件, 根据文件夹id上传到对应目录")
+    @PostMapping("uploadByPrivate/{id}")
+    public R uploadByPrivate(@ApiParam(name = "id", value = "文件夹id", required = true) @PathVariable String id , @ApiParam(name = "file", value = "文件", required = true) @RequestParam("files") MultipartFile[] files,
+                          HttpServletRequest request){
+        //验证用户是否登录
+        String memberId = JwtUtils.getMemberIdByJwtToken(request);
+        if (StringUtils.isEmpty(memberId)){
+            return R.error().message("您还未登录，先登录后再进行上传");
+        }
+        UploadInfo uploadInfo = new UploadInfo();
+        uploadInfo.setMemberId(memberId);
+        uploadInfo.setIsPublic(0);
+        if (StringUtils.isEmpty(id)){
+            uploadInfo.setParentId("0");
+        }
+        uploadInfo.setParentId(id);
+
+        for (int i = 0; i < files.length; i++) {
+
+            //调用接口上传文件
+            sourceService.uploadSource(files[i],uploadInfo);
+        }
+
+        return R.ok();
+    }
 
     @ApiOperation(value = "新建文件夹")
     @PostMapping("createDirectory")
     public R newDirectory(@ApiParam(name = "directoryVo", value = "文件夹信息", required = true)
-                        @RequestBody DirectoryVo directoryVo, HttpServletRequest request){
+                          @RequestBody DirectoryVo directoryVo, HttpServletRequest request){
 
         //验证用户是否登录
         String memberId = JwtUtils.getMemberIdByJwtToken(request);

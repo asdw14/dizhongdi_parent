@@ -68,7 +68,7 @@ public class DzdSource implements Serializable {
     private Long downCount;
 
     @ApiModelProperty(value = "资源状态 ：0私有，1公开")
-    private String isPublic;
+    private Integer isPublic;
 
     @ApiModelProperty(value = "是否封禁 ：0未封，1封禁")
     private Integer isBan;

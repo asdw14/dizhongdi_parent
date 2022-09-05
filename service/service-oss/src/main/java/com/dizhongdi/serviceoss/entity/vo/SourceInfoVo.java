@@ -43,7 +43,7 @@ public class SourceInfoVo {
     private String sourceName;
 
     @ApiModelProperty(value = "文件大小：MB")
-    private BigDecimal fileSize;
+    private Double fileSize;
 
     @ApiModelProperty(value = "md5值")
     private String md5;

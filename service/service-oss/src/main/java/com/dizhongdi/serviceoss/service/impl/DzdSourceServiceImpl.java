@@ -59,6 +59,7 @@ public class DzdSourceServiceImpl extends ServiceImpl<DzdSourceMapper, DzdSource
     @Value("${aliyun.oss.file.bucketname}")
     private String bucketName;
 
+    //分页获取公开资源
     @Override
     public List<SourceInfoVo> getPublicPageList(Page<DzdSource> sourcePage, SourceQuery sourceQuery, Boolean isAdmin) {
         List<SourceInfoVo> sourcesList = new ArrayList<>();
@@ -80,7 +81,6 @@ public class DzdSourceServiceImpl extends ServiceImpl<DzdSourceMapper, DzdSource
             wrapper.orderByDesc("gmt_create");
         }   //如果是用户，获取热度最高的
         else {
-            wrapper.orderByDesc("down_count");
             //获取未封禁资源
             wrapper.eq("is_ban",0);
         }
@@ -95,8 +95,8 @@ public class DzdSourceServiceImpl extends ServiceImpl<DzdSourceMapper, DzdSource
                 wrapper.between("file_size",minfileSize,maxfileSize);
 
             //if查询条件里的文件名不为空
-            if (!StringUtils.isEmpty(userId))
-                wrapper.eq("source_name",sourceName);
+            if (!StringUtils.isEmpty(sourceName))
+                wrapper.like("source_name",sourceName);
 
             //if查询条件里的是否免费不为空
             if (isCharge!=null) {
@@ -168,15 +168,28 @@ public class DzdSourceServiceImpl extends ServiceImpl<DzdSourceMapper, DzdSource
 
     @Override
     public boolean uploadSource(MultipartFile file, UploadInfo uploadInfo) {
+
         // 创建OSSClient实例。
         OSS ossClient = new OSSClientBuilder().build("https://"+endpoint, accessKeyId, accessKeySecret);
         try {
-            DzdSource dzdSource = new DzdSource();
-            BeanUtils.copyProperties(uploadInfo,dzdSource);
+            String uploadUrl = null;
             //获取上传文件流
             InputStream inputStream = file.getInputStream();
             //获取文件md5值
             String md5 = DigestUtils.md5DigestAsHex(inputStream);
+
+            //如果用户没有设置上传文件名默认以原文件名显示
+            if (StringUtils.isEmpty(uploadInfo.getSourceName())){
+                uploadInfo.setSourceName(file.getOriginalFilename());
+            }
+
+            DzdSource dzdSource = new DzdSource();
+            //设置是否公开
+            dzdSource.setIsPublic(uploadInfo.getIsPublic());
+
+            BeanUtils.copyProperties(uploadInfo,dzdSource);
+
+
             dzdSource.setMd5(md5);
             //原始文件名
             String originalFilename = file.getOriginalFilename();
@@ -186,24 +199,36 @@ public class DzdSourceServiceImpl extends ServiceImpl<DzdSourceMapper, DzdSource
             //把byte转为MB单位
             dzdSource.setFileSize((fileSize/1024/1024));
 
-            //构建日期路径：avatar/2019/02/26/文件名
-            String datePath = new DateTime().toString("yyyy/MM/dd");
 
-            //文件路径:用户id/上传日期/用户给的文件名
-            String userId = uploadInfo.getMemberId();
-            String uploadUrl = null;
-            String filepath;
-            if (!StringUtils.isEmpty(userId))
-                filepath = userId +  datePath + "/" + uploadInfo.getSourceName();
+            //判断是否有一样的文件，有直接把路径拿来不上传了
+            List<DzdSource> md5SourceList = baseMapper.selectList(new QueryWrapper<DzdSource>().eq("md5", md5));
+            if (md5SourceList.size()>0){
+                uploadUrl = md5SourceList.get(0).getSourceOssUrl();
+            }else {
 
-            filepath = datePath + "/" + uploadInfo.getSourceName();
-            //文件上传至阿里云
-            ossClient.putObject(bucketName,filepath,file.getInputStream());
-            //获取url地址
-            uploadUrl = "https://" + bucketName + "." + endpoint + "/" + filepath;
+                //构建日期路径：avatar/2019/02/26/文件名
+                String datePath = new DateTime().toString("yyyy/MM/dd");
+
+                //文件路径:用户id/上传日期/用户给的文件名
+                String userId = uploadInfo.getMemberId();
+                String filepath;
+                if (!StringUtils.isEmpty(userId))
+                    filepath = userId +  datePath + "/" + uploadInfo.getSourceName();
+
+                filepath = datePath + "/" + uploadInfo.getSourceName();
+                //文件上传至阿里云
+                ossClient.putObject(bucketName,filepath,file.getInputStream());
+                //获取url地址
+                uploadUrl = "https://" + bucketName + "." + endpoint + "/" + filepath;
+            }
+
             System.out.println(uploadUrl);
             //添加文件链接
             dzdSource.setSourceOssUrl(uploadUrl);
+            //添加父层级id
+            if (!StringUtils.isEmpty(uploadInfo.getParentId())){
+                dzdSource.setParentId(uploadInfo.getParentId());
+            }
             System.out.println(dzdSource);
             return this.save(dzdSource);
 
@@ -256,7 +281,17 @@ public class DzdSourceServiceImpl extends ServiceImpl<DzdSourceMapper, DzdSource
     public List<SourceInfoVo> getMemberSourceByDirectoryId(String id, String memberId, SourceQuery sourceQuery) {
         ArrayList<SourceInfoVo> sourceList = new ArrayList<>();
 
-        QueryWrapper<DzdSource> wrapper = new QueryWrapper<DzdSource>().eq("parent_id", id).eq("member_id", memberId);
+        QueryWrapper<DzdSource> wrapper;
+
+        //根据文件名查找返回所有对应文件
+        //后期改造获取远程调用es查询
+        if ((sourceQuery!=null) && !(StringUtils.isEmpty(sourceQuery.getSourceName()))){
+            wrapper = new QueryWrapper<DzdSource>().like("source_name", sourceQuery.getSourceName()).eq("member_id", memberId);
+
+        }else {
+            wrapper = new QueryWrapper<DzdSource>().eq("parent_id", id).eq("member_id", memberId).eq("is_public",0);
+
+        }
 
         List<DzdSource> dzdSources = baseMapper.selectList(wrapper);
 
@@ -267,13 +302,6 @@ public class DzdSourceServiceImpl extends ServiceImpl<DzdSourceMapper, DzdSource
             }
         );
 
-        //根据文件名查找返回所有对应文件
-        //获取远程调用es查询
-//        if ((sourceQuery!=null) && (sourceQuery.getSourceName()!=null)){
-//            QueryWrapper<DzdSource> queryWrapper = new QueryWrapper<>().like("source_name",sourceQuery.getSourceName());
-//
-//
-//        }
 
         return sourceList;
     }

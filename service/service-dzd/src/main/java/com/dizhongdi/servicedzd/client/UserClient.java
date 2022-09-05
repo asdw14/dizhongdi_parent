@@ -1,12 +1,15 @@
 package com.dizhongdi.servicedzd.client;
 
 import com.dizhongdi.model.AdminGetUserVo;
+import com.dizhongdi.model.UcenterMember;
 import org.springframework.cloud.netflix.ribbon.RibbonClient;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+
+import java.util.List;
 
 /**
  * ClassName:UserClient
@@ -21,4 +24,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 public interface UserClient {
     @GetMapping("/admin/user/userAllInfo/{id}")
     public AdminGetUserVo getAllInfoId(@PathVariable String id);
+
+    @PostMapping("/admin/user/getAllMember")
+    public List<UcenterMember> getAllMember();
 }
