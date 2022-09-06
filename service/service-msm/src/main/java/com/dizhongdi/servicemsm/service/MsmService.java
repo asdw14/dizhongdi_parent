@@ -11,5 +11,7 @@ package com.dizhongdi.servicemsm.service;
 public interface MsmService {
     //发送手机验证码
     public boolean send(String phone, String templateCode,String code);
+    public boolean aliSend(String phone,String code);
+
     public String getCode();
 }
