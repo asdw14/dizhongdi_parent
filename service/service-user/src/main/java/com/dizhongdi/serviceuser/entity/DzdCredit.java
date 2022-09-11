@@ -36,6 +36,12 @@ public class DzdCredit implements Serializable {
     @ApiModelProperty(value = "用户积分")
     private Long credit;
 
+    @ApiModelProperty(value = "用户下载次数")
+    private Integer quantity;
+
+    @ApiModelProperty(value = "用户等级")
+    private Integer lv;
+
     @ApiModelProperty(value = "逻辑删除 1（true）已删除， 0（false）未删除")
     private Integer isDeleted;
 
