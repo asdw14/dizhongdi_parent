@@ -206,19 +206,22 @@ public class DzdSourceController {
     }
 
     @ApiOperation(value = "根据id获取url")
-    @PostMapping("getOssUrl/{id}")
+    @PostMapping("getOssUrl/{id}/{memberId}")
     public R getOssUrl(@ApiParam(name = "id", value = "文件id", required = true)
-                          @PathVariable String id, HttpServletRequest request){
+                          @PathVariable String id, HttpServletRequest request,@PathVariable String memberId){
 
         //验证用户是否登录
-        String memberId = JwtUtils.getMemberIdByJwtToken(request);
+//        String memberId = JwtUtils.getMemberIdByJwtToken(request);
         if (StringUtils.isEmpty(memberId)){
-//            return R.error().message("您还未登录哦，请先登录再删除文件^_^");
+            return R.error().message("您还未登录哦，请先登录再下载文件^_^");
         }
 
-        //增加下载次数
-        boolean b = sourceService.addDownCount(id);
-        return R.ok();
+        String url = sourceService.getSourceUrl(id,memberId);
+        if (url!=null){
+            return R.ok().data("url",url);
+        }
+        return R.error().message("下载次数不足");
+
     }
 
 }

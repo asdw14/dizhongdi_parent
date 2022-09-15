@@ -345,4 +345,21 @@ public class DzdSourceServiceImpl extends ServiceImpl<DzdSourceMapper, DzdSource
         DzdSource downCount = dzdSource.setDownCount(dzdSource.getDownCount() + 1);
         return this.updateById(downCount);
     }
+
+    //减少用户下载次数并返回url
+    @Override
+    public String getSourceUrl(String id, String memberId) {
+        //剩余下载次数大于0
+        if (userClient.getQuantityById(memberId)>0){
+            if (userClient.cutQuantityById(memberId,1)){
+                DzdSource dzdSource = baseMapper.selectById(id);
+                if (dzdSource!=null){
+                    return dzdSource.getSourceOssUrl();
+                }
+            }
+        }
+        return null;
+    }
+
+
 }

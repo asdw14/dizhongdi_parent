@@ -35,4 +35,16 @@ public class UserClientImpl implements UserClient {
     public boolean cutDatasize(String memberId, Double size) {
         return true;
     }
+
+    @Override
+    //根据用户id获取剩余下载次数
+    public Integer getQuantityById(String memberId) {
+        return 0;
+    }
+
+    //减少1次下载次数
+    @Override
+    public boolean cutQuantityById(String memberId, Integer num) {
+        return false;
+    }
 }

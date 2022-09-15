@@ -53,4 +53,8 @@ public interface DzdSourceService extends IService<DzdSource> {
 
     //增加下载次数
     boolean addDownCount(String id);
+
+    //减少用户下载次数并返回url
+    String getSourceUrl(String id, String memberId);
+
 }
