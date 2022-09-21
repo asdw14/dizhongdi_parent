@@ -3,11 +3,13 @@ package com.dizhongdi.serviceoss.controller.api;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.dizhongdi.result.R;
+import com.dizhongdi.serviceoss.client.UserClient;
 import com.dizhongdi.serviceoss.entity.DzdSource;
 import com.dizhongdi.serviceoss.entity.vo.DirectoryVo;
 import com.dizhongdi.serviceoss.entity.vo.SourceInfoVo;
 import com.dizhongdi.serviceoss.entity.vo.SourceQuery;
 import com.dizhongdi.serviceoss.entity.vo.UploadInfo;
+import com.dizhongdi.serviceoss.service.DownLogService;
 import com.dizhongdi.serviceoss.service.DzdSourceService;
 import com.dizhongdi.utils.JwtUtils;
 import io.swagger.annotations.Api;
@@ -41,6 +43,12 @@ public class DzdSourceController {
 
     @Autowired
     DzdSourceService sourceService;
+
+    @Autowired
+    UserClient userClient;
+
+    @Autowired
+    DownLogService downLogService;
 
     @ApiOperation(value = "分页获取公开资源")
     @PostMapping("getPublicPageList/{page}/{limit}")
@@ -206,19 +214,29 @@ public class DzdSourceController {
     }
 
     @ApiOperation(value = "根据id获取url")
-    @PostMapping("getOssUrl/{id}/{memberId}")
+    @PostMapping("getOssUrl/{id}")
     public R getOssUrl(@ApiParam(name = "id", value = "文件id", required = true)
-                          @PathVariable String id, HttpServletRequest request,@PathVariable String memberId){
+                          @PathVariable String id, HttpServletRequest request){
 
         //验证用户是否登录
-//        String memberId = JwtUtils.getMemberIdByJwtToken(request);
+        String memberId = JwtUtils.getMemberIdByJwtToken(request);
         if (StringUtils.isEmpty(memberId)){
             return R.error().message("您还未登录哦，请先登录再下载文件^_^");
         }
 
-        String url = sourceService.getSourceUrl(id,memberId);
+        String url = null;
+        //判断是否下载购买过
+        if (downLogService.getIsBuy(id,memberId)){
+            //购买过直接获取链接
+            url =  sourceService.getById(id).getSourceOssUrl();
+        }else {
+            url = sourceService.getSourceUrl(id,memberId);
+        }
+
+        //如果能下载url不为空
         if (url!=null){
-            return R.ok().data("url",url);
+            Integer quantity = userClient.getQuantityById(memberId);
+            return R.ok().data("url",url).message("您的下载次数还剩: " + quantity + "次");
         }
         return R.error().message("下载次数不足");
 

@@ -9,12 +9,14 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.dizhongdi.model.AdminGetUserVo;
 import com.dizhongdi.servicebase.exceptionhandler.DzdException;
 import com.dizhongdi.serviceoss.client.UserClient;
+import com.dizhongdi.serviceoss.entity.DownLog;
 import com.dizhongdi.serviceoss.entity.DzdSource;
 import com.dizhongdi.serviceoss.entity.vo.DirectoryVo;
 import com.dizhongdi.serviceoss.entity.vo.SourceInfoVo;
 import com.dizhongdi.serviceoss.entity.vo.SourceQuery;
 import com.dizhongdi.serviceoss.entity.vo.UploadInfo;
 import com.dizhongdi.serviceoss.mapper.DzdSourceMapper;
+import com.dizhongdi.serviceoss.service.DownLogService;
 import com.dizhongdi.serviceoss.service.DzdSourceService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.joda.time.DateTime;
@@ -45,6 +47,9 @@ public class DzdSourceServiceImpl extends ServiceImpl<DzdSourceMapper, DzdSource
 
     @Autowired
     UserClient userClient;
+
+    @Autowired
+    DownLogService downLogService;
 
     // Endpoint以华东1（杭州）为例，其它Region请按实际情况填写。
     @Value("${aliyun.oss.file.endpoint}")
@@ -115,6 +120,8 @@ public class DzdSourceServiceImpl extends ServiceImpl<DzdSourceMapper, DzdSource
             //获取用户头像昵称
             AdminGetUserVo user = userClient.getAllInfoId(record.getMemberId());
             source.setAvatar(user.getAvatar()).setNickname(user.getNickname());
+            //隐藏下载地址url
+            source.setSourceOssUrl("");
             return source;
         }).forEach(source -> sourcesList.add(source));
 
@@ -353,6 +360,10 @@ public class DzdSourceServiceImpl extends ServiceImpl<DzdSourceMapper, DzdSource
         if (userClient.getQuantityById(memberId)>0){
             if (userClient.cutQuantityById(memberId,1)){
                 DzdSource dzdSource = baseMapper.selectById(id);
+                //添加购买记录
+                DownLog downLog = new DownLog();
+                downLog.setSourceId(id).setMemberId(memberId);
+                downLogService.save(downLog);
                 if (dzdSource!=null){
                     return dzdSource.getSourceOssUrl();
                 }
