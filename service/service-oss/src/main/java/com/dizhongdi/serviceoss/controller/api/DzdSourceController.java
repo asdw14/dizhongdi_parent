@@ -236,6 +236,13 @@ public class DzdSourceController {
         //如果能下载url不为空
         if (url!=null){
             Integer quantity = userClient.getQuantityById(memberId);
+
+            //增加资源下载次数
+            sourceService.addDownCount(id,1);
+
+            //增加分享人一次下载次数
+            userClient.addQuantityById(memberId,1);
+
             return R.ok().data("url",url).message("您的下载次数还剩: " + quantity + "次");
         }
         return R.error().message("下载次数不足");

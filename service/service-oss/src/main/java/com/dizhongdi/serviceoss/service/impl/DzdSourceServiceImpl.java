@@ -219,10 +219,12 @@ public class DzdSourceServiceImpl extends ServiceImpl<DzdSourceMapper, DzdSource
                 //文件路径:用户id/上传日期/用户给的文件名
                 String userId = uploadInfo.getMemberId();
                 String filepath;
-                if (!StringUtils.isEmpty(userId))
-                    filepath = userId +  datePath + "/" + uploadInfo.getSourceName();
+                if (!StringUtils.isEmpty(userId)){
+                    filepath = userId +  datePath + "/" + file.getOriginalFilename();
+                }else {
+                    filepath = datePath + "/" + file.getOriginalFilename();
+                }
 
-                filepath = datePath + "/" + uploadInfo.getSourceName();
                 //文件上传至阿里云
                 ossClient.putObject(bucketName,filepath,file.getInputStream());
                 //获取url地址
@@ -347,9 +349,9 @@ public class DzdSourceServiceImpl extends ServiceImpl<DzdSourceMapper, DzdSource
 
     //增加下载次数
     @Override
-    public boolean addDownCount(String id) {
+    public boolean addDownCount(String id, Integer count) {
         DzdSource dzdSource = baseMapper.selectById(id);
-        DzdSource downCount = dzdSource.setDownCount(dzdSource.getDownCount() + 1);
+        DzdSource downCount = dzdSource.setDownCount(dzdSource.getDownCount() + count);
         return this.updateById(downCount);
     }
 

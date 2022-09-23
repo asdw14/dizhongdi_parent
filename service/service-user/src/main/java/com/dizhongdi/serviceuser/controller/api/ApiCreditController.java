@@ -39,5 +39,12 @@ public class ApiCreditController {
         return false;
     }
 
+    @PutMapping("addQuantityById/{memberId}/{num}")
+    @ApiOperation(value = "增加下载次数")
+    public boolean addQuantityById(@PathVariable String memberId , @PathVariable Integer num){
+        DzdCredit credit = creditService.getById(memberId);
+            return creditService.updateById(credit.setQuantity(credit.getQuantity() + num));
+    }
+
 }
 

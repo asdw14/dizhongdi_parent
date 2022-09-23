@@ -39,8 +39,12 @@ public interface UserClient {
     @PostMapping("/api/user/credit/getQuantityById/{memberId}")
     Integer getQuantityById(@PathVariable String memberId);
 
-    //减少1次下载次数
+    //减少下载次数
     @PutMapping("/api/user/credit/cutQuantityById/{memberId}/{num}")
     boolean cutQuantityById(@PathVariable String memberId, @PathVariable Integer num);
+
+    //增加下载次数
+    @PutMapping("/api/user/credit/addQuantityById/{memberId}/{num}")
+    boolean addQuantityById(@PathVariable String memberId, @PathVariable Integer num);
 
 }

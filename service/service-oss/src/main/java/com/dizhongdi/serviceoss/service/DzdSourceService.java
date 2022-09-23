@@ -52,7 +52,7 @@ public interface DzdSourceService extends IService<DzdSource> {
     boolean deleteByMemberAndSourceId(String memberId, String id);
 
     //增加下载次数
-    boolean addDownCount(String id);
+    boolean addDownCount(String id,Integer count);
 
     //减少用户下载次数并返回url
     String getSourceUrl(String id, String memberId);
