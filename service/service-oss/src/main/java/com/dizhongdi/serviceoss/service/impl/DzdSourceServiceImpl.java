@@ -76,6 +76,8 @@ public class DzdSourceServiceImpl extends ServiceImpl<DzdSourceMapper, DzdSource
         BigDecimal maxfileSize = sourceQuery.getMaxfileSize();
         String sourceName = sourceQuery.getSourceName();
         Boolean isCharge = sourceQuery.getIsCharge();
+        //排序顺序 true为按日期
+        boolean sort = sourceQuery.isSort();
 
         //公开资源
         wrapper.eq("is_public",1);
@@ -110,6 +112,13 @@ public class DzdSourceServiceImpl extends ServiceImpl<DzdSourceMapper, DzdSource
                 }else {
                     wrapper.eq("is_charge", 1);
                 }
+            }
+
+            //排序
+            if(sort){
+                wrapper.orderByDesc("gmt_create");
+            }else {
+                wrapper.orderByDesc("down_count");
             }
         }
 

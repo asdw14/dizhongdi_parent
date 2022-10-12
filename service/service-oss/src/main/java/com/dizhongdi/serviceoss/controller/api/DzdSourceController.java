@@ -16,6 +16,8 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.util.DigestUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -50,7 +52,11 @@ public class DzdSourceController {
     @Autowired
     DownLogService downLogService;
 
+    @Autowired
+    RedisTemplate redisTemplate;
+
     @ApiOperation(value = "分页获取公开资源")
+    @Cacheable(value = "publicSourcePage")
     @PostMapping("getPublicPageList/{page}/{limit}")
     public R getPublicPageList(
             @ApiParam(name = "page", value = "当前页码", required = true)
@@ -65,6 +71,23 @@ public class DzdSourceController {
         List<SourceInfoVo> queryList = sourceService.getPublicPageList(sourcePage, userQuery, false);
         return R.ok().data("items", queryList).data("total", sourcePage.getTotal());
     }
+
+    @ApiOperation(value = "分页获取公开资源")
+    @PostMapping("getPublicQueryPageList/{page}/{limit}")
+    public R getPublicQueryPageList(
+            @ApiParam(name = "page", value = "当前页码", required = true)
+            @PathVariable Long page,
+
+            @ApiParam(name = "limit", value = "每页记录数", required = true)
+            @PathVariable Long limit,
+
+            @ApiParam(name = "UserQuery", value = "查询对象", required = false)
+            @RequestBody SourceQuery userQuery) {
+        Page<DzdSource> sourcePage = new Page<>(page, limit);
+        List<SourceInfoVo> queryList = sourceService.getPublicPageList(sourcePage, userQuery, false);
+        return R.ok().data("items", queryList).data("total", sourcePage.getTotal());
+    }
+
 
 
     @ApiOperation(value = "根据文件夹id获取个人资源")

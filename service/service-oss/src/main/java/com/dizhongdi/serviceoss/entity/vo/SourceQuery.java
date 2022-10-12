@@ -32,6 +32,9 @@ public class SourceQuery implements Serializable {
     @TableId(value = "id", type = IdType.ID_WORKER_STR)
     private String id;
 
+    //排序顺序，true为按日期 false按下载量
+    private boolean sort = true;
+
     @ApiModelProperty(value = "上传用户的id")
     private String memberId;
 
