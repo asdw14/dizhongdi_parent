@@ -11,6 +11,7 @@ import com.dizhongdi.utils.JwtUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -57,6 +58,8 @@ public class MemberApiController {
 
     //根据id获取用户信息，返回用户信息对象
     @PostMapping("getInfoUc/{id}")
+    @ApiOperation(value = "根据id获取用户信息，返回用户信息对象")
+    @Cacheable(value = "userInfoById")
     public UcenterMember getInfo(@PathVariable String id) {
         UcenterMember ucenterMember = memberService.getById(id);
         return ucenterMember;
