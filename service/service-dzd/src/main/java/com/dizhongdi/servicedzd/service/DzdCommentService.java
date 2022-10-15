@@ -41,5 +41,11 @@ public interface DzdCommentService extends IService<DzdComment> {
 
     //根据评论父id和当前评论条数，每次增加10条获取子评论
     List<CommentInfoVo> getCommentChildrenByParentId(String parentId, Integer count);
+
+    //根据父评论id删除所有子评论
+    void removeByParentId(String id);
+
+    //根据帖子id获取所有评论
+    List<CommentInfoVo> getAllByArticle(String articleId);
 }
 

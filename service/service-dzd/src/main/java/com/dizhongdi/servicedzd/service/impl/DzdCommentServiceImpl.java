@@ -280,4 +280,73 @@ public class DzdCommentServiceImpl extends ServiceImpl<DzdCommentMapper, DzdComm
         return comments;
     }
 
+    //根据父评论id删除所有子评论
+    @Override
+    public void removeByParentId(String parentId) {
+        QueryWrapper<DzdComment> wrapper = new QueryWrapper<>();
+        wrapper.eq("parent_id",parentId);
+        baseMapper.delete(wrapper);
+    }
+
+    //根据帖子id获取所有评论
+    @Override
+    public List<CommentInfoVo> getAllByArticle(String articleId) {
+        ArrayList<CommentInfoVo> commentInfos = new ArrayList<>();
+        //一级评论基本信息
+        List<DzdComment> comments = baseMapper.selectList(
+                new QueryWrapper<DzdComment>().eq("article_id", articleId).
+                        and(wrapper -> wrapper.eq("parent_id", articleId)).orderByDesc("gmt_create"));
+
+        //获取所有用户
+        List<UcenterMember> allMember = userClient.getAllMember();
+
+        comments.stream().map(comment ->{
+            CommentInfoVo commentInfo = new CommentInfoVo();
+            //一级评论基本信息
+            BeanUtils.copyProperties(comment,commentInfo);
+
+            //获取评论的用户信息：头像昵称
+            if (allMember!=null){
+                allMember.forEach( user ->{
+                    if (user.getId().equals(commentInfo.getMemberId())){
+                        commentInfo.setAvatar(user.getAvatar()).setNickname(user.getNickname());
+
+                    }
+                } );
+            }
+
+            //子评论列表
+            ArrayList<CommentInfoVo> children = new ArrayList<>();
+            List<DzdComment> childrens = baseMapper.selectList(
+                    new QueryWrapper<DzdComment>()
+                            .eq("article_id", articleId)
+                            .and(wrapper -> wrapper.eq("parent_id", comment.getId())));
+            //遍历获取其他信息
+            childrens.stream().map(c ->{
+                //子评论对象
+                CommentInfoVo childrenInfo = new CommentInfoVo();
+
+                BeanUtils.copyProperties(c,childrenInfo);
+
+                //获取评论人头像昵称
+//            AdminGetUserVo userInfo = userClient.getAllInfoId(children.getMemberId());
+                if (allMember!=null){
+                    allMember.forEach( user ->{
+                        if (user.getId().equals(commentInfo.getMemberId())){
+                            childrenInfo.setAvatar(user.getAvatar()).setNickname(user.getNickname());
+                        }
+                    } );
+                }
+                return childrenInfo;
+                //将数据添加进子评论集合
+            }).forEach( childrenInfo ->children.add(childrenInfo));
+
+            commentInfo.setChildren(children);
+
+            return commentInfo;
+        }).forEach(commentInfo -> commentInfos.add(commentInfo));
+
+        return commentInfos;
+    }
+
 }
