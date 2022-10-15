@@ -5,14 +5,12 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.dizhongdi.result.R;
 import com.dizhongdi.servicedzd.entity.DzdArticle;
-import com.dizhongdi.servicedzd.entity.vo.article.AticleQueryVo;
-import com.dizhongdi.servicedzd.entity.vo.article.CreateArticleVo;
-import com.dizhongdi.servicedzd.entity.vo.article.GetrAticleVo;
-import com.dizhongdi.servicedzd.entity.vo.article.GetrUserAticleVo;
+import com.dizhongdi.servicedzd.entity.vo.article.*;
 import com.dizhongdi.servicedzd.service.DzdArticleService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -65,6 +63,24 @@ public class AdminArticleController {
             return R.ok();
         }
         return R.error();
+    }
+
+
+    @ApiOperation(value = "根据id暗箱操作包括 下载次数 购买次数 价格")
+    @PutMapping("operation")
+    public R operation(@RequestBody OperationVo operation){
+        if (operation != null && operation.getId() != null){
+            DzdArticle source = dzdArticleService.getById(operation.getId());
+            if (source != null){
+                BeanUtils.copyProperties(operation,source);
+                return dzdArticleService.updateById(source) == true? R.ok().message("更改成功") : R.error().message("更改失败");
+            }
+
+            return R.error().message("文章不存在");
+
+        }else {
+            return R.error().message("文章不存在");
+        }
     }
 
     @ApiOperation(value = "修改帖子封禁状态")
