@@ -42,11 +42,20 @@ public class StatisticsDaily implements Serializable {
     @ApiModelProperty(value = "登录人数")
     private Integer loginNum;
 
-    @ApiModelProperty(value = "每日播放视频数")
-    private Integer videoViewNum;
+    @ApiModelProperty(value = "每日帖子浏览数")
+    private Integer articleViewNum;
 
-    @ApiModelProperty(value = "每日新增课程数")
-    private Integer courseNum;
+    @ApiModelProperty(value = "每日下载资源数")
+    private Integer sourceDownNum;
+
+    @ApiModelProperty(value = "每日新增资源数")
+    private Integer sourceNum;
+
+    @ApiModelProperty(value = "每日新增帖子数")
+    private Integer articleNum;
+
+    @ApiModelProperty(value = "每日新增评论数")
+    private Integer commentNum;
 
     @ApiModelProperty(value = "创建时间")
     @TableField(fill = FieldFill.INSERT)
