@@ -4,9 +4,12 @@ import com.aliyun.oss.ClientException;
 import com.aliyun.oss.OSS;
 import com.aliyun.oss.OSSClientBuilder;
 import com.aliyun.oss.OSSException;
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.dizhongdi.model.AdminGetUserVo;
+import com.dizhongdi.model.ArticleStarLogByUser;
+import com.dizhongdi.model.UserSourceDownLog;
 import com.dizhongdi.servicebase.exceptionhandler.DzdException;
 import com.dizhongdi.serviceoss.client.UserClient;
 import com.dizhongdi.serviceoss.entity.DownLog;
@@ -129,8 +132,11 @@ public class DzdSourceServiceImpl extends ServiceImpl<DzdSourceMapper, DzdSource
             //获取用户头像昵称
             AdminGetUserVo user = userClient.getAllInfoId(record.getMemberId());
             source.setAvatar(user.getAvatar()).setNickname(user.getNickname());
-            //隐藏下载地址url
-            source.setSourceOssUrl("");
+
+            // 如果不是管理员
+            // 隐藏下载地址url
+            if (!isAdmin)
+                source.setSourceOssUrl("");
             return source;
         }).forEach(source -> sourcesList.add(source));
 
@@ -381,6 +387,36 @@ public class DzdSourceServiceImpl extends ServiceImpl<DzdSourceMapper, DzdSource
             }
         }
         return null;
+    }
+
+    //根据用户id查询资源下载记录
+    @Override
+    public List<UserSourceDownLog> getSourceDownByUserId(String memberId) {
+        List<UserSourceDownLog> list = new ArrayList<>();
+
+        //下载记录
+        List<DownLog> downLogs = downLogService.getByMemberId(memberId);
+
+        if (downLogs==null){
+            return null;
+        }
+
+        //添加进帖子标题和描述
+        downLogs.stream().map(downLog ->{
+            UserSourceDownLog sourceDownLog = new UserSourceDownLog();
+            sourceDownLog.setSourceId(downLog.getSourceId());
+
+            //根据资源id查找资源信息
+            DzdSource source = this.getById(downLog.getSourceId());
+            if (source!=null)
+                BeanUtils.copyProperties(source,sourceDownLog);
+            else
+                sourceDownLog.setSourceName("资源已被删除");
+            return sourceDownLog;
+
+        }).forEach(list::add);
+
+        return list;
     }
 
 

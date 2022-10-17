@@ -2,6 +2,8 @@ package com.dizhongdi.serviceoss.controller.api;
 
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.dizhongdi.model.ArticleStarLogByUser;
+import com.dizhongdi.model.UserSourceDownLog;
 import com.dizhongdi.result.R;
 import com.dizhongdi.serviceoss.client.UserClient;
 import com.dizhongdi.serviceoss.entity.DzdSource;
@@ -270,6 +272,12 @@ public class DzdSourceController {
         }
         return R.error().message("下载次数不足");
 
+    }
+
+    @ApiOperation(value = "根据用户id查询资源下载记录")
+    @GetMapping("getSourceDownByUserId/{memberId}")
+    public List<UserSourceDownLog> getSourceDownByUserId(@PathVariable String memberId){
+        return sourceService.getSourceDownByUserId(memberId);
     }
 
 }

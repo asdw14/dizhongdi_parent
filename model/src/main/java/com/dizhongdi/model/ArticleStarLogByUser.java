@@ -21,6 +21,12 @@ public class ArticleStarLogByUser {
     //发帖用户id
     private String memberId;
 
+//    昵称
+    private String nickname;
+
+    //头像
+    private String avatar;
+
     //帖子id
     private String articleId;
 
