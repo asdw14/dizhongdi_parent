@@ -1,7 +1,9 @@
 package com.dizhongdi.serviceuser.controller.api;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.dizhongdi.model.ArticleViewLogByUser;
 import com.dizhongdi.result.R;
+import com.dizhongdi.serviceuser.client.DzdArticleClient;
 import com.dizhongdi.serviceuser.entity.LoginInfo;
 import com.dizhongdi.serviceuser.entity.LoginVo;
 import com.dizhongdi.serviceuser.entity.RegisterVo;
@@ -12,6 +14,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -31,6 +34,9 @@ import java.util.List;
 public class MemberApiController {
     @Autowired
     private UcenterMemberService memberService;
+
+    @Autowired
+    private DzdArticleClient dzdArticleClient;
 
     @ApiOperation(value = "会员登录")
     @PostMapping("login")
@@ -72,4 +78,27 @@ public class MemberApiController {
         Integer count = memberService.countRegisterByDay(day);
         return count;
     }
+
+    @GetMapping(value = "getArticleView")
+    @ApiOperation(value = "前台根据用户id查询帖子浏览记录")
+    public R getArticleView(HttpServletRequest request){
+        String memberId = JwtUtils.getMemberIdByJwtToken(request);
+        if (StringUtils.isEmpty(memberId)){
+            return R.error().message("请先登录后在进行查看浏览记录！");
+        }
+        System.out.println(memberId);
+        List<ArticleViewLogByUser> viewByUserId = dzdArticleClient.getArticleViewByUserId(memberId);
+        if (viewByUserId==null){
+            return R.ok().data("items",null);
+        }
+        viewByUserId.forEach(articleView->{
+            UcenterMember user = memberService.getById(articleView.getMemberId());
+            //发帖人头像
+            articleView.setAvatar(user.getAvatar());
+            //发帖人昵称
+            articleView.setNickname(user.getNickname());
+        });
+        return R.ok().data("items",viewByUserId);
+    }
+
 }
