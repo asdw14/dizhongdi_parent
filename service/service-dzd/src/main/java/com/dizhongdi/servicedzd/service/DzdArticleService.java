@@ -3,6 +3,7 @@ package com.dizhongdi.servicedzd.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.dizhongdi.model.ArticleStarLogByUser;
 import com.dizhongdi.model.ArticleViewLogByUser;
 import com.dizhongdi.servicedzd.entity.DzdArticle;
 import com.dizhongdi.servicedzd.entity.vo.article.*;
@@ -66,4 +67,7 @@ public interface DzdArticleService extends IService<DzdArticle> {
 
     //前台根据用户id查询帖子浏览记录
     List<ArticleViewLogByUser> getArticleViewByUserId(String memberId);
+
+    //前台根据用户id查询帖子点赞记录
+    List<ArticleStarLogByUser> getArticleStarByUserId(String memberId);
 }

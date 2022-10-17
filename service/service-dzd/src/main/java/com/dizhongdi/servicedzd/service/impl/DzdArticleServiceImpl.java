@@ -7,10 +7,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.dizhongdi.model.AdminGetUserVo;
-import com.dizhongdi.model.ArticleViewLogByUser;
-import com.dizhongdi.model.EsArticleVo;
-import com.dizhongdi.model.UcenterMember;
+import com.dizhongdi.model.*;
 import com.dizhongdi.rabbit.config.MqConst;
 import com.dizhongdi.rabbit.service.RabbitService;
 import com.dizhongdi.servicedzd.client.UserClient;
@@ -545,6 +542,32 @@ public class DzdArticleServiceImpl extends ServiceImpl<DzdArticleMapper, DzdArti
 
         return list;
 
+    }
+
+    //前台根据用户id查询帖子点赞记录
+    @Override
+    public List<ArticleStarLogByUser> getArticleStarByUserId(String memberId) {
+        List<ArticleStarLogByUser> list = new ArrayList<>();
+
+        //点赞记录
+        Wrapper wrapper = new QueryWrapper<ArticleStar>().eq("member_id",memberId).orderByDesc("gmt_modified");
+        List<ArticleStar> articleStars = articleStarService.list(wrapper);
+
+        //添加进帖子标题和描述
+        articleStars.stream().map(vll ->{
+            ArticleStarLogByUser articleStarLogByUser = new ArticleStarLogByUser();
+            BeanUtils.copyProperties(vll,articleStarLogByUser);
+            DzdArticle article = this.getById(vll.getArticleId());
+            //简单描述
+            if (article.getSummary()!=null)
+                articleStarLogByUser.setSummary(article.getSummary());
+            //标题
+            articleStarLogByUser.setTitle(article.getTitle());
+            return articleStarLogByUser;
+
+        }).forEach(list::add);
+
+        return list;
     }
 
 

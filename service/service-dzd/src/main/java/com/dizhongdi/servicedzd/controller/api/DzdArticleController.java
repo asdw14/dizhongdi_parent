@@ -4,6 +4,7 @@ package com.dizhongdi.servicedzd.controller.api;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.dizhongdi.model.ArticleStarLogByUser;
 import com.dizhongdi.model.ArticleViewLogByUser;
 import com.dizhongdi.result.R;
 import com.dizhongdi.servicebase.utils.IpUtils;
@@ -148,6 +149,11 @@ public class DzdArticleController {
         return dzdArticleService.getArticleViewByUserId(memberId);
     }
 
+    @ApiOperation(value = "前台根据用户id查询帖子点赞记录")
+    @GetMapping("getArticleStarByUserId/{memberId}")
+    public List<ArticleStarLogByUser> getArticleStarByUserId(@PathVariable String memberId){
+        return dzdArticleService.getArticleStarByUserId(memberId);
+    }
 
 }
 
