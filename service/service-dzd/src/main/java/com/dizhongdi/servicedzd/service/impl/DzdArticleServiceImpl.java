@@ -2,11 +2,13 @@ package com.dizhongdi.servicedzd.service.impl;
 
 
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.dizhongdi.model.AdminGetUserVo;
+import com.dizhongdi.model.ArticleViewLogByUser;
 import com.dizhongdi.model.EsArticleVo;
 import com.dizhongdi.model.UcenterMember;
 import com.dizhongdi.rabbit.config.MqConst;
@@ -53,6 +55,7 @@ public class DzdArticleServiceImpl extends ServiceImpl<DzdArticleMapper, DzdArti
     ArticleStarService articleStarService;
 
     @Autowired
+    //浏览记录
     ArticleViewLogService articleViewLogService;
 
     @Autowired
@@ -516,6 +519,32 @@ public class DzdArticleServiceImpl extends ServiceImpl<DzdArticleMapper, DzdArti
     @Override
     public boolean getIsStar(String id, String memberId) {
         return articleStarService.getIsStar(id,memberId);
+    }
+
+    @Override
+    //前台根据用户id查询帖子浏览记录
+    public List<ArticleViewLogByUser> getArticleViewByUserId(String memberId) {
+        List<ArticleViewLogByUser> list = new ArrayList<>();
+
+        Wrapper wrapper = new QueryWrapper<ArticleViewLog>().eq("member_id",memberId).orderByDesc("gmt_modified");
+        List<ArticleViewLog> viewLogList = articleViewLogService.list(wrapper);
+
+        //添加进帖子标题和描述
+        viewLogList.stream().map(vll ->{
+            ArticleViewLogByUser articleViewLogByUser = new ArticleViewLogByUser();
+            BeanUtils.copyProperties(vll,articleViewLogByUser);
+            DzdArticle article = this.getById(vll.getArticleId());
+            //简单描述
+            if (article.getSummary()!=null)
+                articleViewLogByUser.setSummary(article.getSummary());
+            //标题
+            articleViewLogByUser.setTitle(article.getTitle());
+            return articleViewLogByUser;
+
+        }).forEach(list::add);
+
+        return list;
+
     }
 
 

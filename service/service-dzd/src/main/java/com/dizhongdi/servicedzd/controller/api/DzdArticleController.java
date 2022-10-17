@@ -1,12 +1,17 @@
 package com.dizhongdi.servicedzd.controller.api;
 
 
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.dizhongdi.model.ArticleViewLogByUser;
 import com.dizhongdi.result.R;
 import com.dizhongdi.servicebase.utils.IpUtils;
+import com.dizhongdi.servicedzd.entity.ArticleViewLog;
 import com.dizhongdi.servicedzd.entity.DzdArticle;
 import com.dizhongdi.servicedzd.entity.vo.article.*;
 import com.dizhongdi.servicedzd.entity.vo.comment.PushCommentVo;
+import com.dizhongdi.servicedzd.service.ArticleViewLogService;
 import com.dizhongdi.servicedzd.service.DzdArticleService;
 import com.dizhongdi.utils.JwtUtils;
 import io.swagger.annotations.Api;
@@ -34,6 +39,7 @@ public class DzdArticleController {
 
     @Autowired
     DzdArticleService dzdArticleService;
+
 
     @ApiOperation(value = "发布帖子")
     @PostMapping("/saveOrPush")
@@ -135,6 +141,13 @@ public class DzdArticleController {
         return R.ok().data("starIs",flag);
 
     }
+
+    @ApiOperation(value = "前台根据用户id查询帖子浏览记录")
+    @GetMapping("getArticleViewByUserId/{memberId}")
+    public List<ArticleViewLogByUser> getArticleViewByUserId(@PathVariable String memberId){
+        return dzdArticleService.getArticleViewByUserId(memberId);
+    }
+
 
 }
 
