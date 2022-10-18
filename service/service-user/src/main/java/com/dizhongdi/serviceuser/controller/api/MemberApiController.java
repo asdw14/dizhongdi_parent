@@ -1,10 +1,11 @@
 package com.dizhongdi.serviceuser.controller.api;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.dizhongdi.model.ArticleStarLogByUser;
 import com.dizhongdi.model.ArticleViewLogByUser;
+import com.dizhongdi.model.UserSourceDownLog;
 import com.dizhongdi.result.R;
 import com.dizhongdi.serviceuser.client.DzdArticleClient;
+import com.dizhongdi.serviceuser.client.SourceClient;
 import com.dizhongdi.serviceuser.entity.LoginInfo;
 import com.dizhongdi.serviceuser.entity.LoginVo;
 import com.dizhongdi.serviceuser.entity.RegisterVo;
@@ -39,6 +40,9 @@ public class MemberApiController {
 
     @Autowired
     private DzdArticleClient dzdArticleClient;
+
+    @Autowired
+    private SourceClient sourceClient;
 
     @ApiOperation(value = "会员登录")
     @PostMapping("login")
@@ -88,7 +92,7 @@ public class MemberApiController {
         if (StringUtils.isEmpty(memberId)){
             return R.error().message("请先登录后在进行查看浏览记录！");
         }
-        System.out.println(memberId);
+//        System.out.println(memberId);
         List<ArticleViewLogByUser> viewByUserId = dzdArticleClient.getArticleViewByUserId(memberId);
         if (viewByUserId==null){
             return R.ok().data("items",null).message("没有浏览记录");
@@ -112,7 +116,7 @@ public class MemberApiController {
         if (StringUtils.isEmpty(memberId)){
             return R.error().message("请先登录后在进行查看浏览记录！");
         }
-        System.out.println(memberId);
+//        System.out.println(memberId);
         List<ArticleStarLogByUser> articleStarByUserId = dzdArticleClient.getArticleStarByUserId(memberId);
         if (articleStarByUserId==null){
             return R.ok().data("items",null).message("没有点赞记录");
@@ -129,4 +133,19 @@ public class MemberApiController {
         return R.ok().data("items",articleStarByUserId);
     }
 
+    @GetMapping(value = "getDownLog")
+    @ApiOperation(value = "前台根据用户id查询下载记录")
+    public R getDownLog(HttpServletRequest request){
+        String memberId = JwtUtils.getMemberIdByJwtToken(request);
+        if (StringUtils.isEmpty(memberId)){
+            return R.error().message("请先登录后在进行查看下载记录！");
+        }
+//        System.out.println(memberId);
+        List<UserSourceDownLog> downLogs = sourceClient.getSourceDownByUserId(memberId);
+        if (downLogs == null){
+            return R.ok().data("items",null).message("没有记录");
+        }
+
+        return R.ok().data("items",downLogs);
+    }
 }
