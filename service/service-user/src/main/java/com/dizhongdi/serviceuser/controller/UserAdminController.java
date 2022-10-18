@@ -65,10 +65,34 @@ public class UserAdminController {
         return userAdminService.queryById(id);
     }
 
+    @ApiOperation(value = "根据id获取用户所有的信息")
+    @GetMapping("getUserInfoById/{id}")
+    public R getUserInfoById(@PathVariable String id){
+        AdminGetUserVo userVo = userAdminService.queryById(id);
+        return R.ok().data("item",userVo);
+    }
 
     //获取所有用户信息
     @PostMapping("getAllMember")
     public List<UcenterMember> getAllMember(){
         return userAdminService.list(new QueryWrapper<UcenterMember>());
     }
+
+    @PostMapping("sexSts")
+    @ApiOperation(value = "统计性别")
+    public R sexSts(){
+        QueryWrapper<UcenterMember> wrapper = new QueryWrapper<>();
+        int sum = userAdminService.count(wrapper);
+        //女
+        wrapper.eq("sex",1);
+
+        int woman = userAdminService.count(wrapper);
+
+        //男
+        int man = userAdminService.count(new QueryWrapper<UcenterMember>().eq("sex", 2));
+
+        return R.ok().data("sum",sum).data("woman",woman).data("man",man);
+    }
+
+
 }
