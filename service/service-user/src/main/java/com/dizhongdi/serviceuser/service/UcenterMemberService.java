@@ -1,5 +1,6 @@
 package com.dizhongdi.serviceuser.service;
 
+import com.dizhongdi.model.AdminGetUserVo;
 import com.dizhongdi.serviceuser.entity.LoginInfo;
 import com.dizhongdi.serviceuser.entity.LoginVo;
 import com.dizhongdi.serviceuser.entity.RegisterVo;
@@ -17,8 +18,10 @@ import com.baomidou.mybatisplus.extension.service.IService;
 public interface UcenterMemberService extends IService<UcenterMember> {
     //    会员登录
     String login(LoginVo loginVo);
+
     //    会员注册
     void register(RegisterVo registerVo);
+
 //    根据token获取用户信息
     LoginInfo getLoginInfo(String id);
 
@@ -26,4 +29,7 @@ public interface UcenterMemberService extends IService<UcenterMember> {
 
     //统计某一天的注册人数
     Integer countRegisterByDay(String day);
+
+    //获取用户全部信息
+    AdminGetUserVo getUserInfo(String memberId);
 }

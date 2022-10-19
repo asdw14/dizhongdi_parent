@@ -38,6 +38,9 @@ public class AdminGetUserVo {
     @ApiModelProperty(value = "用户积分")
     private Long credit;
 
+    @ApiModelProperty(value = "用户下载次数")
+    private Integer quantity;
+
     @ApiModelProperty(value = "总容量")
     private BigDecimal datasize;
 

@@ -54,11 +54,9 @@ public class UserQuery {
     private Integer isDisabled;
 
 
-    @ApiModelProperty(value = "创建时间")
-    @TableField(fill = FieldFill.INSERT)
-    private Date gmtCreate;
+    @ApiModelProperty(value = "起始时间")
+    private Date begin;
 
-    @ApiModelProperty(value = "更新时间")
-    @TableField(fill = FieldFill.INSERT_UPDATE)
+    @ApiModelProperty(value = "终止时间")
     private Date gmtModified;
 }

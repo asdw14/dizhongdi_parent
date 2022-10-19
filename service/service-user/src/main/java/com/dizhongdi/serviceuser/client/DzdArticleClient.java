@@ -4,6 +4,7 @@ import com.dizhongdi.model.ArticleStarLogByUser;
 import com.dizhongdi.model.ArticleViewLogByUser;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
@@ -18,6 +19,7 @@ import java.util.List;
  * @Author:dizhongdi
  */
 @FeignClient(value = "service-dzd" ,fallback = DzdArticleClientImpl.class)
+@Component
 public interface DzdArticleClient {
 
     //前台根据用户id查询帖子浏览记录

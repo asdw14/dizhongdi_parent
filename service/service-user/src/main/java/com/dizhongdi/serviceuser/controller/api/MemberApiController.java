@@ -1,5 +1,6 @@
 package com.dizhongdi.serviceuser.controller.api;
 
+import com.dizhongdi.model.AdminGetUserVo;
 import com.dizhongdi.model.ArticleStarLogByUser;
 import com.dizhongdi.model.ArticleViewLogByUser;
 import com.dizhongdi.model.UserSourceDownLog;
@@ -147,5 +148,17 @@ public class MemberApiController {
         }
 
         return R.ok().data("items",downLogs);
+    }
+
+    @GetMapping(value = "getUserInfo")
+    @ApiOperation(value = "前台查询用户所有信息")
+    public R getUserInfo(HttpServletRequest request){
+        String memberId = JwtUtils.getMemberIdByJwtToken(request);
+        if (StringUtils.isEmpty(memberId)){
+            return R.error().message("您还没进行登录！");
+        }
+        AdminGetUserVo member = memberService.getUserInfo(memberId);
+
+        return R.ok().data("item",member);
     }
 }

@@ -52,11 +52,27 @@ public class UserAdminServiceImpl extends ServiceImpl<UcenterMemberMapper, Ucent
         QueryWrapper<UcenterMember> wrapper = new QueryWrapper<>();
         List<AdminGetUserVo> list = new ArrayList<>();
         String id = userQuery.getId();
-        if (userQuery!=null){
-            if(!StringUtils.isEmpty(id)){
-                wrapper.eq("id",id);
+        if (userQuery!=null) {
+            if (!StringUtils.isEmpty(id)) {
+                wrapper.eq("id", id).or().eq("nickname", userQuery.getId());
+            }
+
+            //判断查询条件是否有封禁未封禁
+            if (!StringUtils.isEmpty(userQuery.getIsDisabled())) {
+                //如果为1查询已封禁的
+                if (1 == userQuery.getIsDisabled()) {
+                    wrapper.eq("is_disabled", 1);
+                } else {
+                    wrapper.eq("is_disabled", 0);
+                }
+            }
+            //大于开始日期
+            if (!StringUtils.isEmpty(userQuery.getBegin())) {
+                wrapper.ge("gmt_create", userQuery.getBegin());
+
             }
         }
+        wrapper.orderByDesc("gmt_create");
 
         IPage<UcenterMember> selectPage = baseMapper.selectPage(userPage, wrapper);
         selectPage.getRecords().stream().map(user -> {
@@ -65,13 +81,14 @@ public class UserAdminServiceImpl extends ServiceImpl<UcenterMemberMapper, Ucent
             //获取用户空间
             DzdDatasize datasize = datasizeService.getById(user.getId());
             if ( datasize != null)
-                BeanUtils.copyProperties(datasize, userInfo);
+                userInfo.setDatasize(datasize.getDatasize());
             //获取用户积分
             DzdCredit credit = creditService.getById(user.getId());
-            return credit == null ? userInfo : userInfo.setCredit(credit.getCredit());
+            return credit == null ? userInfo : userInfo.setCredit(credit.getCredit()).setQuantity(credit.getQuantity());
         }).forEach( user -> list.add(user) );
         return list;
     }
+
 
     //根据id获取用户所有信息
     @Override
@@ -80,15 +97,18 @@ public class UserAdminServiceImpl extends ServiceImpl<UcenterMemberMapper, Ucent
         UcenterMember user = this.getById(id);
         AdminGetUserVo userInfo = new AdminGetUserVo();
         BeanUtils.copyProperties(user,userInfo);
-        //获取用户积分
-        DzdCredit credit = creditService.getById(id);
-        if (credit != null)
-            userInfo.setCredit(credit.getCredit());
-
         //获取用户空间
-        DzdDatasize datasize = datasizeService.getById(id);
-       if ( datasize != null)
-           BeanUtils.copyProperties(datasize, userInfo);
+        DzdDatasize datasize = datasizeService.getById(user.getId());
+        if(datasize != null){
+            userInfo.setDatasize(datasize.getDatasize());
+        }
+
+        //获取用户积分
+        DzdCredit credit = creditService.getById(user.getId());
+        if(credit != null){
+            userInfo.setCredit(credit.getCredit()).setQuantity(credit.getQuantity());
+
+        }
         //返回用户全部信息
         return userInfo;
     }

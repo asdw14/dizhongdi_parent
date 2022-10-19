@@ -1,6 +1,7 @@
 package com.dizhongdi.serviceuser.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.dizhongdi.model.AdminGetUserVo;
 import com.dizhongdi.servicebase.exceptionhandler.DzdException;
 import com.dizhongdi.servicebase.utils.MD5;
 import com.dizhongdi.serviceuser.entity.*;
@@ -78,12 +79,12 @@ public class UcenterMemberServiceImpl extends ServiceImpl<UcenterMemberMapper, U
                 StringUtils.isEmpty(nickname) ||
                 StringUtils.isEmpty(password) ||
                 StringUtils.isEmpty(code)) {
-            throw new DzdException(20001,"error");
+            throw new DzdException(20001,"请输入全部选项");
         }
 
         //如果手机号已经注册过
         if (baseMapper.selectCount(new QueryWrapper<UcenterMember>().eq("mobile",mobile))>0){
-            throw new DzdException(20001,"error");
+            throw new DzdException(20001,"您已注册过");
         }
 
         //校验校验验证码
@@ -92,7 +93,7 @@ public class UcenterMemberServiceImpl extends ServiceImpl<UcenterMemberMapper, U
         if(!code.equals(mobleCode)) {
             System.out.println(mobile);
             System.out.println(mobleCode + ".." + code);
-            throw new DzdException(20001,"error");
+            throw new DzdException(20001,"验证码不一致");
         }
 
         //添加注册信息到数据库
@@ -101,11 +102,15 @@ public class UcenterMemberServiceImpl extends ServiceImpl<UcenterMemberMapper, U
         ucenterMember.setPassword(MD5.encrypt(password));
         ucenterMember.setNickname(nickname);
         ucenterMember.setIsDisabled(0);
-        ucenterMember.setAvatar("https://dizhongdi-parent.oss-cn-hangzhou.aliyuncs.com/cover/favicon.jpg");
+        ucenterMember.setAvatar("https://thirdwx.qlogo.cn/mmopen/vi_32/Q3auHgzwzM5PhJyn79l9BzIoUoBvF0iaWq5aqGBocR953bib2hiarJu8bTNXE51ibuRVFZagbiczUBtZEl99x5pnChw/132");
         this.save(ucenterMember);
 
+        //添加用户下载次数和积分
         String id = ucenterMember.getId();
-        creditService.save(new DzdCredit().setId(id));
+        DzdCredit credit = new DzdCredit().setQuantity(3).setId(ucenterMember.getId());
+        creditService.save(credit);
+
+        //添加用户空间
         datasizeService.save(new DzdDatasize().setId(id));
 
     }
@@ -138,5 +143,28 @@ public class UcenterMemberServiceImpl extends ServiceImpl<UcenterMemberMapper, U
     public Integer countRegisterByDay(String day) {
         //根据用户数据添加时间查询记录
         return baseMapper.selectRegisterCount(day);
+    }
+
+    //根据id获取用户所有信息
+    @Override
+    public AdminGetUserVo getUserInfo(String id) {
+        //获取用户基本信息
+        UcenterMember user = this.getById(id);
+        AdminGetUserVo userInfo = new AdminGetUserVo();
+        BeanUtils.copyProperties(user,userInfo);
+        //获取用户空间
+        DzdDatasize datasize = datasizeService.getById(user.getId());
+        if(datasize != null){
+            userInfo.setDatasize(datasize.getDatasize());
+        }
+
+        //获取用户积分
+        DzdCredit credit = creditService.getById(user.getId());
+        if(credit != null){
+            userInfo.setCredit(credit.getCredit()).setQuantity(credit.getQuantity());
+
+        }
+        //返回用户全部信息
+        return userInfo;
     }
 }
