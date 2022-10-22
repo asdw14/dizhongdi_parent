@@ -253,7 +253,8 @@ public class DzdSourceController {
         //判断是否下载购买过
         if (downLogService.getIsBuy(id,memberId)){
             //购买过直接获取链接
-            url =  sourceService.getById(id).getSourceOssUrl();
+            DzdSource source = sourceService.getById(id);
+            url = source.getSourceOssUrl();
         }else {
             url = sourceService.getSourceUrl(id,memberId);
         }
@@ -264,9 +265,6 @@ public class DzdSourceController {
 
             //增加资源下载次数
             sourceService.addDownCount(id,1);
-
-            //增加分享人一次下载次数
-            userClient.addQuantityById(memberId,1);
 
             return R.ok().data("url",url).message("您的下载次数还剩: " + quantity + "次");
         }

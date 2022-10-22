@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 @Component
 @FeignClient(name="service-user",fallback = UserClientImpl.class)
 public interface UserClient {
+    //所有用户信息
     @GetMapping("/admin/user/userAllInfo/{id}")
     public AdminGetUserVo getAllInfoId(@PathVariable String id);
 

@@ -47,4 +47,9 @@ public class UserClientImpl implements UserClient {
     public boolean cutQuantityById(String memberId, Integer num) {
         return false;
     }
+
+    @Override
+    public boolean addQuantityById(String memberId, Integer num) {
+        return false;
+    }
 }

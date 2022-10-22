@@ -377,6 +377,8 @@ public class DzdSourceServiceImpl extends ServiceImpl<DzdSourceMapper, DzdSource
         if (userClient.getQuantityById(memberId)>0){
             if (userClient.cutQuantityById(memberId,1)){
                 DzdSource dzdSource = baseMapper.selectById(id);
+                //增加分享人一次下载次数
+                userClient.addQuantityById(dzdSource.getMemberId(),1);
                 //添加购买记录
                 DownLog downLog = new DownLog();
                 downLog.setSourceId(id).setMemberId(memberId);
@@ -412,6 +414,8 @@ public class DzdSourceServiceImpl extends ServiceImpl<DzdSourceMapper, DzdSource
                 BeanUtils.copyProperties(source,sourceDownLog);
             else
                 sourceDownLog.setSourceName("资源已被删除");
+            //下载时间
+            sourceDownLog.setGmtModified(downLog.getGmtModified());
             return sourceDownLog;
 
         }).forEach(list::add);
